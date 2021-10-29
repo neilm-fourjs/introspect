@@ -3,101 +3,102 @@ PACKAGE introspect
 IMPORT reflect
 
 FUNCTION show(l_rv reflect.Value)
-	DEFINE l_f    ui.Form
-	DEFINE l_n    om.DomNode
-	DEFINE l_tabl om.DomNode
-	DEFINE l_rv2  reflect.Value
-	DEFINE x, z   SMALLINT
-	DEFINE l_typ  STRING
-	DEFINE l_d    ui.Dialog
-	DEFINE l_fields DYNAMIC ARRAY OF RECORD
-		nam STRING,
-		typ STRING
-	END RECORD
-	DEFINE l_event STRING
-	DEFINE l_tabn  STRING
+	DEFINE l_n   om.DomNode
+	DEFINE l_typ STRING
 
 	DISPLAY "Type:", l_rv.getType().toString(), " Kind:", l_rv.getType().getKind()
 	DISPLAY "Name:", l_rv.getType().getAttribute("json_name")
 
 -- open a window and create a form with a grid
 	OPEN WINDOW intro_show AT 1, 1 WITH 1 ROWS, 1 COLUMNS
-	LET l_f = ui.Window.getCurrent().createForm("intro_show")
-	LET l_n = l_f.getNode().createChild('Grid')
+	LET l_n = ui.Window.getCurrent().createForm("intro_show").getNode().createChild('Grid')
 	CALL l_n.setAttribute("width", 100)
 	CALL l_n.setAttribute("gridWidth", 100)
 
 -- find out if we have RECORD or an ARRAY passed.
-	LET l_typ = l_rv.getType().toString()
-	IF l_typ != "RECORD" THEN
-		LET l_typ = l_rv.getType().getKind()
-	END IF
-
+	LET l_typ = l_rv.getType().getKind()
 -- If it's record then add the record items to the form and do a simple menu.
 	IF l_typ = "RECORD" THEN
-		FOR x = 1 TO l_rv.getType().getFieldCount()
-			CALL formAddGridItem(x, l_n, l_rv.getType(), l_rv.getField(x).toString())
-		END FOR
-		MENU
-			ON ACTION back ATTRIBUTES(TEXT = "Back")
-				EXIT MENU
-			ON ACTION close
-				EXIT MENU
-		END MENU
+		CALL showRecord(l_n, l_rv)
 	END IF
-
--- If it's an array then create a table build a display array
 	IF l_typ = "ARRAY" THEN
-		LET l_tabl = l_n.createChild("Table")
-		LET l_tabn = "tablistv"
-		DISPLAY "Tabn:", l_tabn, " Len: ", l_rv.getLength()
-		CALL l_tabl.setAttribute("tabName", l_tabn)
-		CALL l_tabl.setAttribute("width", 100)
-		CALL l_tabl.setAttribute("gridWidth", 100)
-		CALL l_tabl.setAttribute("height", "20")
-		CALL l_tabl.setAttribute("pageSize", "20")
-		CALL l_tabl.setAttribute("posY", "1")
-
-		-- add the columns to the table build our 'fields' list.
-		LET l_rv2 = l_rv.getArrayElement(1)
-		FOR x = 1 TO l_rv2.getType().getFieldCount()
-			LET l_fields[x].nam = l_rv2.getType().getFieldName(x)
-			LET l_fields[x].typ = l_rv2.getType().getFieldType(x).toString()
-			CALL formAddTableColumn(x, l_tabl, l_rv2.getType())
-		END FOR
-
-		-- create a dialog object and populate it.
-		LET l_d = ui.Dialog.createDisplayArrayTo(l_fields, l_tabn)
-		FOR z = 1 TO l_rv.getLength() -- loop through array items
-			LET l_rv2 = l_rv.getArrayElement(z)
-			CALL l_d.setCurrentRow(l_tabn, z)
-			FOR x = 1 TO l_rv2.getType().getFieldCount() -- loop though fields in the record
-				CALL l_d.setFieldValue(l_fields[x].nam, l_rv2.getField(x).toString())
-			END FOR
-			CALL l_d.setCurrentRow(l_tabn, 1) -- force the first row to be the current row.
-		END FOR
-
-		-- add our default actions to the dialog
-		CALL l_d.addTrigger("ON ACTION close")
-		CALL l_d.addTrigger("ON ACTION accept")
-		CALL l_d.addTrigger("ON ACTION cancel")
-
-		-- loop getting events from the dialog object
-		WHILE TRUE
-			LET l_event = l_d.nextEvent()
-			CASE l_event
-				WHEN "ON ACTION close"
-					LET int_flag = TRUE
-					EXIT WHILE
-				WHEN "ON ACTION cancel"
-					LET int_flag = TRUE
-					EXIT WHILE
-			END CASE
-		END WHILE
-		CALL l_d.close()
+		CALL showArray(l_n, l_rv)
 	END IF
 
 	CLOSE WINDOW intro_show
+END FUNCTION
+--------------------------------------------------------------------------------------------------------------
+FUNCTION showRecord(l_n om.DomNode, l_rv reflect.Value)
+	DEFINE x SMALLINT
+
+	FOR x = 1 TO l_rv.getType().getFieldCount()
+		CALL formAddGridItem(x, l_n, l_rv.getType(), l_rv.getField(x).toString())
+	END FOR
+	MENU
+		ON ACTION back ATTRIBUTES(TEXT = "Back")
+			EXIT MENU
+		ON ACTION close
+			EXIT MENU
+	END MENU
+END FUNCTION
+--------------------------------------------------------------------------------------------------------------
+-- create a table build a display array
+FUNCTION showArray(l_n om.DomNode, l_rv reflect.Value)
+	DEFINE l_d ui.Dialog
+	DEFINE l_fields DYNAMIC ARRAY OF RECORD
+		nam STRING,
+		typ STRING
+	END RECORD
+	DEFINE l_tabl  om.DomNode
+	DEFINE l_event STRING
+	DEFINE l_tabn  STRING
+	DEFINE l_rv2   reflect.Value
+	DEFINE x, z    SMALLINT
+
+	LET l_tabl = l_n.createChild("Table")
+	LET l_tabn = "tablistv"
+	CALL l_tabl.setAttribute("tabName", l_tabn)
+	CALL l_tabl.setAttribute("width", 100)
+	CALL l_tabl.setAttribute("gridWidth", 100)
+	CALL l_tabl.setAttribute("height", "20")
+	CALL l_tabl.setAttribute("pageSize", "20")
+	CALL l_tabl.setAttribute("posY", "1")
+
+	-- add the columns to the table build our 'fields' list.
+	LET l_rv2 = l_rv.getArrayElement(1)
+	FOR x = 1 TO l_rv2.getType().getFieldCount()
+		LET l_fields[x].nam = l_rv2.getType().getFieldName(x)
+		LET l_fields[x].typ = l_rv2.getType().getFieldType(x).toString()
+		CALL formAddTableColumn(x, l_tabl, l_rv2.getType())
+	END FOR
+
+	-- create a dialog object and populate it.
+	LET l_d = ui.Dialog.createDisplayArrayTo(l_fields, l_tabn)
+	FOR z = 1 TO l_rv.getLength() -- loop through array items
+		LET l_rv2 = l_rv.getArrayElement(z)
+		CALL l_d.setCurrentRow(l_tabn, z)
+		FOR x = 1 TO l_rv2.getType().getFieldCount() -- loop though fields in the record
+			CALL l_d.setFieldValue(l_fields[x].nam, l_rv2.getField(x).toString())
+		END FOR
+		CALL l_d.setCurrentRow(l_tabn, 1) -- force the first row to be the current row.
+	END FOR
+
+	-- add our default actions to the dialog
+	CALL l_d.addTrigger("ON ACTION close")
+	CALL l_d.addTrigger("ON ACTION back")
+	CALL l_d.setActionAttribute("back","text","Back")
+
+	-- loop getting events from the dialog object
+	WHILE TRUE
+		LET l_event = l_d.nextEvent()
+		CASE l_event
+			WHEN "ON ACTION close"
+				EXIT WHILE
+			WHEN "ON ACTION back"
+				EXIT WHILE
+		END CASE
+	END WHILE
+	CALL l_d.close()
 
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
@@ -147,7 +148,6 @@ PRIVATE FUNCTION formAddTableColumn(x SMALLINT, l_n om.domNode, l_et reflect.Typ
 	CALL l_tc.setAttribute("numAlign", l_numalign)
 	LET l_tc = l_tc.createChild("Edit")
 	CALL l_tc.setAttribute("width", l_len)
-
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 -- find the length of the field and if it's numeric or not
@@ -155,44 +155,36 @@ END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN)
 	DEFINE z, y, l_len SMALLINT
-	DEFINE l_numalign  BOOLEAN = FALSE
-	DISPLAY "Type:", l_typ
+	DEFINE l_numalign  BOOLEAN = TRUE
 	CASE l_typ
 		WHEN "SMALLINT"
-			LET l_len      = 5
-			LET l_numalign = TRUE
+			LET l_len = 5
 		WHEN "INTEGER"
-			LET l_len      = 10
-			LET l_numalign = TRUE
+			LET l_len = 10
 		WHEN "FLOAT"
-			LET l_len      = 10
-			LET l_numalign = TRUE
+			LET l_len = 10
 		WHEN "STRING"
 			LET l_len = 50
 		WHEN "DATE"
-			LET l_len      = 10
-			LET l_numalign = TRUE
+			LET l_len = 10
 		WHEN "DATETIME YEAR TO FRACTION(5)"
-			LET l_len      = 26
-			LET l_numalign = TRUE
+			LET l_len = 26
 		WHEN "DATETIME YEAR TO SECOND"
-			LET l_len      = 20
-			LET l_numalign = TRUE
+			LET l_len = 20
 		WHEN "DATETIME YEAR TO MINUTE"
-			LET l_len      = 17
-			LET l_numalign = TRUE
+			LET l_len = 17
 		WHEN "DATETIME YEAR TO HOUR"
-			LET l_len      = 14
-			LET l_numalign = TRUE
+			LET l_len = 14
 	END CASE
-	LET z = l_typ.getIndexOf("(", 1)
-	IF l_typ MATCHES "DECIMAL*" OR l_typ MATCHES "MONEY*" THEN
-		LET l_numalign = TRUE
+
+	IF l_typ.subString(1, 4) = "CHAR" OR l_typ.subString(1, 7) = "VARCHAR" OR l_typ.subString(1, 6) = "STRING" THEN
+		LET l_numalign = FALSE
 	END IF
 
+	LET z = l_typ.getIndexOf("(", 1)
 	IF z > 0 THEN
 		LET y = l_typ.getIndexOf(",", z)
-		IF y = 0 THEN
+		IF y THEN
 			LET y = l_typ.getIndexOf(")", z)
 		END IF
 		LET l_len = l_typ.subString(z + 1, y - 1)
