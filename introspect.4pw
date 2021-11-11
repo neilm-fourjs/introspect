@@ -76,4 +76,13 @@
       <File filePath="main.4gl"/>
     </Application>
   </Group>
+  <Group id="577624386" label="Type" language="Genero (no link)">
+    <Library binaryName="lib_type" id="1309714501" label="lib_type">
+      <File filePath="lib_type/lib_type.4gl"/>
+    </Library>
+    <Application binaryName="type" id="-1325163453" label="type">
+      <Configuration id="-1261230128" label="Configuration"/>
+      <File filePath="type.4gl"/>
+    </Application>
+  </Group>
 </Project>
