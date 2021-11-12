@@ -1,0 +1,20 @@
+IMPORT reflect
+IMPORT FGL introspect.*
+&define TEST_TABLE_STRUCTURE idx INTEGER, dat CHAR(3)
+
+MAIN
+	DEFINE arr DYNAMIC ARRAY OF RECORD
+		TEST_TABLE_STRUCTURE
+	END RECORD
+
+	CONNECT TO ":memory:+driver='dbmsqt'"
+	CREATE TABLE foo(TEST_TABLE_STRUCTURE)
+	INSERT INTO foo VALUES(1, "AAA")
+	INSERT INTO foo VALUES(2, "BBB")
+
+	CALL sql2array("SELECT * FROM foo", reflect.Value.valueOf(arr))
+
+	DISPLAY arr[1].*
+	DISPLAY arr[2].*
+
+END MAIN

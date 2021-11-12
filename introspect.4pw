@@ -70,10 +70,24 @@
   <Group id="75644415" label="Group" language="Genero (no link)">
     <Library binaryName="introspect" dependencies="1986" id="14000" label="introspect">
       <File filePath="introspect/introspect.4gl"/>
+      <File filePath="introspect/sql2array.4gl"/>
     </Library>
     <Application binaryName="main" dependencies="14000,1986" id="18736" label="main" language="Genero (no link)">
       <Configuration id="-1429969501" label="Application"/>
       <File filePath="main.4gl"/>
+    </Application>
+  </Group>
+  <Group id="-138630817" label="SQL2Array" language="Genero (no link)">
+    <Library binaryName="DB" id="-1396939974" label="DB">
+      <File filePath="njm_demo310.4db"/>
+    </Library>
+    <Application binaryName="sql2ArrayCustomerDemo" id="1823791876" label="sql2ArrayCustomerDemo">
+      <Configuration id="1056839780" label="Configuration"/>
+      <File filePath="sql2ArrayCustomerDemo.4gl"/>
+    </Application>
+    <Application binaryName="sql2ArrayDemo" dependencies="14000" id="-1501241838" label="sql2ArrayDemo">
+      <Configuration id="957178861" label="Configuration"/>
+      <File filePath="sql2ArrayDemo.4gl"/>
     </Application>
   </Group>
   <Group id="577624386" label="Type" language="Genero (no link)">

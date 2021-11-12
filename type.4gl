@@ -3,13 +3,13 @@ IMPORT FGL introspect.*
 IMPORT FGL lib_type.*
 MAIN
 	DEFINE l_reflect_rec introspect.introspect.simpleObj
-	DEFINE l_myObj lib_type.lib_type.obj
-	DEFINE l_myXMLObj lib_type.lib_type.obj
+	DEFINE l_myObj       lib_type.lib_type.obj
+	DEFINE l_myXMLObj    lib_type.lib_type.obj
 
 	IF NOT l_myObj.isCreated() THEN
 		IF NOT l_myObj.init(NULL, NULL, NULL, FUNCTION chkString) THEN
 			DISPLAY l_myObj.last_error
-			IF NOT l_myObj.init("test","string", " ", FUNCTION chkString) THEN
+			IF NOT l_myObj.init("test", "string", " ", FUNCTION chkString) THEN
 				DISPLAY l_myObj.last_error
 				EXIT PROGRAM
 			END IF

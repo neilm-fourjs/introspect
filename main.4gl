@@ -9,9 +9,9 @@ TYPE t_rec RECORD
 END RECORD
 
 MAIN
-	DEFINE l_rec t_rec ATTRIBUTE(json_name = "l_rec") 
-	DEFINE l_arr DYNAMIC ARRAY OF t_rec ATTRIBUTE(json_name = "l_arr") 
-	DEFINE x     SMALLINT
+	DEFINE l_rec         t_rec ATTRIBUTE(json_name = "l_rec")
+	DEFINE l_arr         DYNAMIC ARRAY OF t_rec ATTRIBUTE(json_name = "l_arr")
+	DEFINE x             SMALLINT
 	DEFINE l_reflect_rec introspect.introspect.simpleObj
 	DEFINE l_reflect_arr introspect.introspect.simpleObj
 

@@ -6,16 +6,16 @@ PUBLIC TYPE simpleObj RECORD
 	kind STRING,
 	type STRING,
 	flds DYNAMIC ARRAY OF RECORD
-		name STRING,
-		type STRING,
-		len INTEGER,
-		num BOOLEAN,
-		func BOOLEAN,
+		name   STRING,
+		type   STRING,
+		len    INTEGER,
+		num    BOOLEAN,
+		func   BOOLEAN,
 		values DYNAMIC ARRAY OF STRING
 	END RECORD,
 	methods DYNAMIC ARRAY OF RECORD
-		name STRING,
-		params DYNAMIC ARRAY OF STRING,
+		name    STRING,
+		params  DYNAMIC ARRAY OF STRING,
 		returns DYNAMIC ARRAY OF STRING
 	END RECORD,
 	rec_count SMALLINT
@@ -25,7 +25,8 @@ FUNCTION (this simpleObj) init(l_rv reflect.Value)
 	DEFINE x, z SMALLINT
 	LET this.kind = l_rv.getType().getKind()
 	LET this.type = l_rv.getType().toString()
-	DISPLAY SFMT("\ninit - Type: %1 Kind: %2 json_name: %3",this.type, this.kind, l_rv.getType().getAttribute ("json_name"))
+	DISPLAY SFMT("\ninit - Type: %1 Kind: %2 json_name: %3",
+			this.type, this.kind, l_rv.getType().getAttribute("json_name"))
 
 	IF this.kind = "RECORD" THEN
 		FOR x = 1 TO l_rv.getType().getFieldCount()
@@ -34,7 +35,7 @@ FUNCTION (this simpleObj) init(l_rv reflect.Value)
 			LET this.flds[x].type = l_et.getFieldType(x).toString()
 			CALL getTypeLen(this.flds[x].type) RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func
 			LET this.flds[x].values[1] = l_rv.getField(x).toString()
-			LET this.rec_count = 1
+			LET this.rec_count         = 1
 		END FOR
 		FOR x = 1 TO l_rv.getType().getMethodCount()
 			VAR l_em reflect.Method = l_rv.getType().getMethod(x)
@@ -71,11 +72,11 @@ FUNCTION (this simpleObj) dump()
 	IF this.kind = "RECORD" THEN
 		DISPLAY "Fields:"
 		FOR x = 1 TO this.flds.getLength()
-			DISPLAY SFMT("%1) %2 %3 Length: %4", x, this.flds[x].name, this.flds[x].type, this.flds[x].len )
+			DISPLAY SFMT("%1) %2 %3 Length: %4", x, this.flds[x].name, this.flds[x].type, this.flds[x].len)
 		END FOR
 		DISPLAY "Methods:"
 		FOR x = 1 TO this.methods.getLength()
-				IF this.methods[x].params.getLength() > 0 THEN
+			IF this.methods[x].params.getLength() > 0 THEN
 				DISPLAY SFMT("%1) %2(", x, this.methods[x].name)
 				FOR z = 1 TO this.methods[x].params.getLength()
 					DISPLAY SFMT("  p%1 %2", z, this.methods[x].params[z])
@@ -98,15 +99,17 @@ FUNCTION (this simpleObj) dump()
 	IF this.kind = "ARRAY" THEN
 		FOR z = 1 TO this.rec_count
 			FOR x = 1 TO this.flds.getLength()
-				DISPLAY SFMT("Row %1: %2 = %3 ( %4 )",z, this.flds[x].name, this.flds[x].values[z], this.flds[x].type )
+				DISPLAY SFMT("Row %1: %2 = %3 ( %4 )", z, this.flds[x].name, this.flds[x].values[z], this.flds[x].type)
 			END FOR
 		END FOR
 	END IF
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 FUNCTION (this simpleObj) show()
-	DEFINE l_n   om.DomNode
-	IF this.flds.getLength() = 0 THEN RETURN END IF
+	DEFINE l_n om.DomNode
+	IF this.flds.getLength() = 0 THEN
+		RETURN
+	END IF
 -- open a window and create a form with a grid
 	OPEN WINDOW intro_show AT 1, 1 WITH 1 ROWS, 1 COLUMNS
 	LET l_n = ui.Window.getCurrent().createForm("intro_show").getNode().createChild('Grid')
@@ -123,9 +126,9 @@ END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 -- Add the record items to the form and do a simple menu.
 FUNCTION (this simpleObj) showRecord(l_n om.DomNode)
-	DEFINE x, y, z SMALLINT
-	DEFINE l_lab      om.DomNode
-	DEFINE l_ff       om.DomNode
+	DEFINE x, y, z  SMALLINT
+	DEFINE l_lab    om.DomNode
+	DEFINE l_ff     om.DomNode
 	DEFINE l_method STRING
 	LET y = 1
 	FOR x = 1 TO this.flds.getLength()
@@ -151,7 +154,7 @@ FUNCTION (this simpleObj) showRecord(l_n om.DomNode)
 		CALL l_ff.setAttribute("posX", 20)
 		CALL l_ff.setAttribute("width", this.flds[x].len)
 		CALL l_ff.setAttribute("gridWidth", this.flds[x].len)
-		CALL l_ff.setAttribute("comment",this.flds[x].type)
+		CALL l_ff.setAttribute("comment", this.flds[x].type)
 		LET y += 1
 	END FOR
 	IF this.methods.getLength() > 0 THEN
@@ -163,22 +166,22 @@ FUNCTION (this simpleObj) showRecord(l_n om.DomNode)
 		CALL l_lab.setAttribute("justify", "left")
 		LET y += 1
 		FOR x = 1 TO this.methods.getLength()
-			LET l_method = this.methods[x].name||"("
+			LET l_method = this.methods[x].name || "("
 			FOR z = 1 TO this.methods[x].params.getLength()
-				LET l_method = l_method.append(SFMT("p%1 %2", z, this.methods[x].params[z] ))
-				IF z <  this.methods[x].params.getLength() THEN
+				LET l_method = l_method.append(SFMT("p%1 %2", z, this.methods[x].params[z]))
+				IF z < this.methods[x].params.getLength() THEN
 					LET l_method = l_method.append(", ")
 				END IF
 			END FOR
 			LET l_method = l_method.append(") RETURNS (")
 			FOR z = 1 TO this.methods[x].returns.getLength()
-				LET l_method = l_method.append(SFMT("%1", this.methods[x].returns[z] ))
-				IF z <  this.methods[x].returns.getLength() THEN
+				LET l_method = l_method.append(SFMT("%1", this.methods[x].returns[z]))
+				IF z < this.methods[x].returns.getLength() THEN
 					LET l_method = l_method.append(", ")
 				END IF
 			END FOR
 			LET l_method = l_method.append(")")
-			LET l_lab = l_n.createChild("Label")
+			LET l_lab    = l_n.createChild("Label")
 			CALL l_lab.setAttribute("text", l_method)
 			CALL l_lab.setAttribute("posY", y)
 			CALL l_lab.setAttribute("posX", 1)
@@ -202,10 +205,10 @@ FUNCTION (this simpleObj) showArray(l_n om.DomNode)
 		nam STRING,
 		typ STRING
 	END RECORD
-	DEFINE l_tabl, l_tc  om.DomNode
-	DEFINE l_event STRING
-	DEFINE l_tabn  STRING
-	DEFINE x, z    SMALLINT
+	DEFINE l_tabl, l_tc om.DomNode
+	DEFINE l_event      STRING
+	DEFINE l_tabn       STRING
+	DEFINE x, z         SMALLINT
 
 	LET l_tabl = l_n.createChild("Table")
 	LET l_tabn = "tablistv"
@@ -220,7 +223,7 @@ FUNCTION (this simpleObj) showArray(l_n om.DomNode)
 	FOR x = 1 TO this.flds.getLength()
 		LET l_fields[x].nam = this.flds[x].name
 		LET l_fields[x].typ = this.flds[x].type
-		LET l_tc = l_tabl.createChild("TableColumn")
+		LET l_tc            = l_tabl.createChild("TableColumn")
 		CALL l_tc.setAttribute("text", this.flds[x].name)
 		CALL l_tc.setAttribute("colName", this.flds[x].name)
 		CALL l_tc.setAttribute("name", "formonly." || this.flds[x].name)
@@ -243,7 +246,7 @@ FUNCTION (this simpleObj) showArray(l_n om.DomNode)
 	-- add our default actions to the dialog
 	CALL l_d.addTrigger("ON ACTION close")
 	CALL l_d.addTrigger("ON ACTION back")
-	CALL l_d.setActionAttribute("back","text","Back")
+	CALL l_d.setActionAttribute("back", "text", "Back")
 
 	-- loop getting events from the dialog object
 	WHILE TRUE
@@ -265,7 +268,7 @@ END FUNCTION
 PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN)
 	DEFINE z, y, l_len SMALLINT
 	DEFINE l_numalign  BOOLEAN = TRUE
-	DEFINE l_func BOOLEAN = FALSE
+	DEFINE l_func      BOOLEAN = FALSE
 
 	CASE l_typ
 		WHEN "SMALLINT"
@@ -288,9 +291,9 @@ PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN)
 			LET l_len = 14
 	END CASE
 
-	IF l_typ.subString(1,8) = "FUNCTION" THEN
-		LET l_len = l_typ.getLength()
-		LET l_func = TRUE
+	IF l_typ.subString(1, 8) = "FUNCTION" THEN
+		LET l_len      = l_typ.getLength()
+		LET l_func     = TRUE
 		LET l_numalign = FALSE
 	ELSE
 		IF l_typ.subString(1, 4) = "CHAR" OR l_typ.subString(1, 7) = "VARCHAR" OR l_typ.subString(1, 6) = "STRING" THEN
