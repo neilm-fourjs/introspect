@@ -13,6 +13,11 @@ PUBLIC TYPE simpleObj RECORD
 		func BOOLEAN,
 		values DYNAMIC ARRAY OF STRING
 	END RECORD,
+	methods DYNAMIC ARRAY OF RECORD
+		name STRING,
+		params DYNAMIC ARRAY OF STRING,
+		returns DYNAMIC ARRAY OF STRING
+	END RECORD,
 	rec_count SMALLINT
 END RECORD
 
@@ -20,7 +25,7 @@ FUNCTION (this simpleObj) init(l_rv reflect.Value)
 	DEFINE x, z SMALLINT
 	LET this.kind = l_rv.getType().getKind()
 	LET this.type = l_rv.getType().toString()
-	DISPLAY SFMT("\ninit - Type: %1 Kind: %2",this.type, this.kind)
+	DISPLAY SFMT("\ninit - Type: %1 Kind: %2 json_name: %3",this.type, this.kind, l_rv.getType().getAttribute ("json_name"))
 
 	IF this.kind = "RECORD" THEN
 		FOR x = 1 TO l_rv.getType().getFieldCount()
@@ -30,6 +35,16 @@ FUNCTION (this simpleObj) init(l_rv reflect.Value)
 			CALL getTypeLen(this.flds[x].type) RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func
 			LET this.flds[x].values[1] = l_rv.getField(x).toString()
 			LET this.rec_count = 1
+		END FOR
+		FOR x = 1 TO l_rv.getType().getMethodCount()
+			VAR l_em reflect.Method = l_rv.getType().getMethod(x)
+			LET this.methods[x].name = l_em.getName()
+			FOR z = 1 TO l_em.getParameterCount()
+				LET this.methods[x].params[z] = l_em.getParameterType(z).toString()
+			END FOR
+			FOR z = 1 TO l_em.getReturnCount()
+				LET this.methods[x].returns[z] = l_em.getReturnType(z).toString()
+			END FOR
 		END FOR
 	END IF
 	IF this.kind = "ARRAY" THEN
@@ -54,8 +69,30 @@ FUNCTION (this simpleObj) dump()
 	DEFINE x, z SMALLINT
 	DISPLAY this.kind
 	IF this.kind = "RECORD" THEN
+		DISPLAY "Fields:"
 		FOR x = 1 TO this.flds.getLength()
 			DISPLAY SFMT("%1) %2 %3 Length: %4", x, this.flds[x].name, this.flds[x].type, this.flds[x].len )
+		END FOR
+		DISPLAY "Methods:"
+		FOR x = 1 TO this.methods.getLength()
+				IF this.methods[x].params.getLength() > 0 THEN
+				DISPLAY SFMT("%1) %2(", x, this.methods[x].name)
+				FOR z = 1 TO this.methods[x].params.getLength()
+					DISPLAY SFMT("  p%1 %2", z, this.methods[x].params[z])
+				END FOR
+				DISPLAY "    )"
+			ELSE
+				DISPLAY SFMT("%1) %2()", x, this.methods[x].name)
+			END IF
+			IF this.methods[x].returns.getLength() > 0 THEN
+				DISPLAY " RETURNS ("
+				FOR z = 1 TO this.methods[x].returns.getLength()
+					DISPLAY SFMT(" %1", this.methods[x].returns[z])
+				END FOR
+				DISPLAY "    )"
+			ELSE
+				DISPLAY " ) RETURNS ()"
+			END IF
 		END FOR
 	END IF
 	IF this.kind = "ARRAY" THEN
@@ -86,14 +123,15 @@ END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 -- Add the record items to the form and do a simple menu.
 FUNCTION (this simpleObj) showRecord(l_n om.DomNode)
-	DEFINE x SMALLINT
+	DEFINE x, y, z SMALLINT
 	DEFINE l_lab      om.DomNode
 	DEFINE l_ff       om.DomNode
-
+	DEFINE l_method STRING
+	LET y = 1
 	FOR x = 1 TO this.flds.getLength()
 		LET l_lab = l_n.createChild("Label")
 		CALL l_lab.setAttribute("text", this.flds[x].name || ":")
-		CALL l_lab.setAttribute("posY", x)
+		CALL l_lab.setAttribute("posY", y)
 		CALL l_lab.setAttribute("posX", 1)
 		CALL l_lab.setAttribute("gridWidth", 18)
 		CALL l_lab.setAttribute("justify", "right")
@@ -109,12 +147,46 @@ FUNCTION (this simpleObj) showRecord(l_n om.DomNode)
 		CALL l_ff.setAttribute("varType", this.flds[x].type)
 		LET l_ff = l_ff.createChild("Edit")
 		CALL l_ff.setAttribute("name", this.flds[x].name)
-		CALL l_ff.setAttribute("posY", x)
+		CALL l_ff.setAttribute("posY", y)
 		CALL l_ff.setAttribute("posX", 20)
 		CALL l_ff.setAttribute("width", this.flds[x].len)
 		CALL l_ff.setAttribute("gridWidth", this.flds[x].len)
 		CALL l_ff.setAttribute("comment",this.flds[x].type)
+		LET y += 1
 	END FOR
+	IF this.methods.getLength() > 0 THEN
+		LET l_lab = l_n.createChild("Label")
+		CALL l_lab.setAttribute("text", "Methods:")
+		CALL l_lab.setAttribute("posY", y)
+		CALL l_lab.setAttribute("posX", 1)
+		CALL l_lab.setAttribute("gridWidth", 20)
+		CALL l_lab.setAttribute("justify", "left")
+		LET y += 1
+		FOR x = 1 TO this.methods.getLength()
+			LET l_method = this.methods[x].name||"("
+			FOR z = 1 TO this.methods[x].params.getLength()
+				LET l_method = l_method.append(SFMT("p%1 %2", z, this.methods[x].params[z] ))
+				IF z <  this.methods[x].params.getLength() THEN
+					LET l_method = l_method.append(", ")
+				END IF
+			END FOR
+			LET l_method = l_method.append(") RETURNS (")
+			FOR z = 1 TO this.methods[x].returns.getLength()
+				LET l_method = l_method.append(SFMT("%1", this.methods[x].returns[z] ))
+				IF z <  this.methods[x].returns.getLength() THEN
+					LET l_method = l_method.append(", ")
+				END IF
+			END FOR
+			LET l_method = l_method.append(")")
+			LET l_lab = l_n.createChild("Label")
+			CALL l_lab.setAttribute("text", l_method)
+			CALL l_lab.setAttribute("posY", y)
+			CALL l_lab.setAttribute("posX", 1)
+			CALL l_lab.setAttribute("gridWidth", l_method.getLength())
+			CALL l_lab.setAttribute("fontPitch", "fixed")
+			LET y += 1
+		END FOR
+	END IF
 	MENU
 		ON ACTION back ATTRIBUTES(TEXT = "Back")
 			EXIT MENU
