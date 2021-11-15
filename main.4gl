@@ -3,10 +3,10 @@ IMPORT FGL fgldialog
 IMPORT FGL introspect.*
 
 TYPE t_rec RECORD
-	my_key  INTEGER ATTRIBUTE(json_name = "key"),
-	str     STRING,
-	created DATETIME YEAR TO SECOND,
-	cost    DECIMAL(10, 2)
+	my_key   INTEGER ATTRIBUTE(json_name = "key"),
+	a_string STRING,
+	created  DATETIME YEAR TO SECOND,
+	cost     DECIMAL(10, 2)
 END RECORD
 
 MAIN
@@ -17,10 +17,10 @@ MAIN
 	DEFINE l_r_arr introspect.rObj.rObj
 
 	FOR x = 1 TO 5
-		LET l_arr[x].my_key  = x
-		LET l_arr[x].str     = "This is test " || x
-		LET l_arr[x].created = CURRENT
-		LET l_arr[x].cost    = x * .5
+		LET l_arr[x].my_key   = x
+		LET l_arr[x].a_string = "This is test " || x
+		LET l_arr[x].created  = CURRENT
+		LET l_arr[x].cost     = x * .5
 	END FOR
 	LET l_rec = l_arr[1]
 	CALL fgl_settitle("Reflection Demo")
