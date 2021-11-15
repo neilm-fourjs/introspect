@@ -74,16 +74,16 @@
       <File filePath="introspect/sql2array.4gl"/>
     </Library>
   </Group>
-  <Group id="1388735151" label="Demo1" language="Genero">
+  <Group id="1388735151" label="Demo1" language="Genero (no link)">
     <Application binaryName="rec" id="-1034729039" label="rec">
       <Configuration id="1326750722" label="Configuration"/>
       <File filePath="rec.4gl"/>
     </Application>
   </Group>
-  <Group id="-1524964217" label="Demo2" language="Genero">
-    <Application binaryName="sql2ArrayDemo" dependencies="14000" id="-1501241838" label="sql2ArrayDemo">
+  <Group id="-1524964217" label="Demo2" language="Genero (no link)">
+    <Application binaryName="sql2arr" dependencies="14000" id="-1501241838" label="sql2arr">
       <Configuration id="957178861" label="Configuration"/>
-      <File filePath="sql2ArrayDemo.4gl"/>
+      <File filePath="sql2arr.4gl"/>
     </Application>
   </Group>
   <Group id="75644415" label="Demo3" language="Genero (no link)">
@@ -91,9 +91,9 @@
       <Configuration id="-1429969501" label="Configuration"/>
       <File filePath="main.4gl"/>
     </Application>
-    <Application binaryName="sql2ArrayCustomerDemo" id="1823791876" label="sql2ArrayCustomerDemo">
+    <Application binaryName="sql2arr_cust" dependencies="14000" id="1823791876" label="sql2arr_cust">
       <Configuration id="1056839780" label="Configuration"/>
-      <File filePath="sql2ArrayCustomerDemo.4gl"/>
+      <File filePath="sql2arr_cust.4gl"/>
     </Application>
   </Group>
   <Group id="577624386" label="Demo4" language="Genero (no link)">
@@ -109,9 +109,9 @@
     <Library binaryName="DB" id="-1396939974" label="DB">
       <File filePath="njm_demo310.4db"/>
     </Library>
-    <Application binaryName="sortDemo" id="-591843457" label="sortDemo">
+    <Application binaryName="sort" id="-591843457" label="sort">
       <Configuration id="-1941066233" label="Configuration"/>
-      <File filePath="sortDemo.4gl"/>
+      <File filePath="sort.4gl"/>
     </Application>
   </Group>
 </Project>

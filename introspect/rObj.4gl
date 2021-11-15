@@ -309,7 +309,7 @@ PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN)
 			LET l_len = l_typ.subString(z + 1, y - 1)
 		END IF
 	END IF
-	DISPLAY SFMT("Type: %1 Len: %2 Num: %3 Func: %4", l_typ, l_len, l_numalign, l_func)
+	--DISPLAY SFMT("Type: %1 Len: %2 Num: %3 Func: %4", l_typ, l_len, l_numalign, l_func)
 
 	RETURN l_len, l_numalign, l_func
 END FUNCTION
