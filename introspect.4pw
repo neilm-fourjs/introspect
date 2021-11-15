@@ -68,8 +68,9 @@
   <LanguageList version="1.0"/>
   <PlatformList version="1.0"/>
   <Group id="-1826451572" label="_IntrospectionLibrary" language="Genero">
-    <Library binaryName="introspect" dependencies="1986" id="14000" label="introspect">
+    <Library binaryName="introspect" dependencies="1986" id="14000" label="introspect" language="Genero (no link)">
       <File filePath="introspect/custom_sort.4gl"/>
+      <File filePath="introspect/prettyName.4gl"/>
       <File filePath="introspect/rObj.4gl"/>
       <File filePath="introspect/sql2array.4gl"/>
     </Library>

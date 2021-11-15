@@ -1,6 +1,7 @@
 PACKAGE introspect
 
 IMPORT reflect
+IMPORT FGL introspect.prettyName
 
 PUBLIC TYPE rObj RECORD
 	kind STRING,
@@ -16,7 +17,8 @@ PUBLIC TYPE rObj RECORD
 	methods DYNAMIC ARRAY OF RECORD
 		name    STRING,
 		params  DYNAMIC ARRAY OF STRING,
-		returns DYNAMIC ARRAY OF STRING
+		returns DYNAMIC ARRAY OF STRING,
+		signature STRING
 	END RECORD,
 	rec_count SMALLINT
 END RECORD
@@ -29,7 +31,7 @@ FUNCTION (this rObj) init(l_rv reflect.Value)
 			this.type, this.kind, l_rv.getType().getAttribute("json_name"))
 
 	IF this.kind = "RECORD" THEN
-		FOR x = 1 TO l_rv.getType().getFieldCount()
+		FOR x = 1 TO l_rv.getType().getFieldCount() -- Loop thru fields
 			VAR l_et reflect.Type = l_rv.getType()
 			LET this.flds[x].name = l_et.getFieldName(x)
 			LET this.flds[x].type = l_et.getFieldType(x).toString()
@@ -37,23 +39,24 @@ FUNCTION (this rObj) init(l_rv reflect.Value)
 			LET this.flds[x].values[1] = l_rv.getField(x).toString()
 			LET this.rec_count         = 1
 		END FOR
-		FOR x = 1 TO l_rv.getType().getMethodCount()
+		FOR x = 1 TO l_rv.getType().getMethodCount() -- Loop thru methods
 			VAR l_em reflect.Method = l_rv.getType().getMethod(x)
 			LET this.methods[x].name = l_em.getName()
-			FOR z = 1 TO l_em.getParameterCount()
+			LET this.methods[x].signature = l_em.getSignature()
+			FOR z = 1 TO l_em.getParameterCount() -- Loop thru Input Parameters
 				LET this.methods[x].params[z] = l_em.getParameterType(z).toString()
 			END FOR
-			FOR z = 1 TO l_em.getReturnCount()
+			FOR z = 1 TO l_em.getReturnCount() -- Loop thru Output Parameters
 				LET this.methods[x].returns[z] = l_em.getReturnType(z).toString()
 			END FOR
 		END FOR
 	END IF
 	IF this.kind = "ARRAY" THEN
 		LET this.rec_count = l_rv.getLength()
-		FOR z = 1 TO this.rec_count -- loop through array items
+		FOR z = 1 TO this.rec_count -- loop thru array items
 			VAR l_rv2 reflect.Value
 			LET l_rv2 = l_rv.getArrayElement(z)
-			FOR x = 1 TO l_rv2.getType().getFieldCount()
+			FOR x = 1 TO l_rv2.getType().getFieldCount() -- loop thru fields
 				IF z = 1 THEN
 					VAR l_et reflect.Type = l_rv2.getType()
 					LET this.flds[x].name = l_et.getFieldName(x)
@@ -126,14 +129,14 @@ END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 -- Add the record items to the form and do a simple menu.
 FUNCTION (this rObj) showRecord(l_n om.DomNode)
-	DEFINE x, y, z  SMALLINT
+	DEFINE x, y SMALLINT
 	DEFINE l_lab    om.DomNode
 	DEFINE l_ff     om.DomNode
 	DEFINE l_method STRING
 	LET y = 1
 	FOR x = 1 TO this.flds.getLength()
 		LET l_lab = l_n.createChild("Label")
-		CALL l_lab.setAttribute("text", this.flds[x].name || ":")
+		CALL l_lab.setAttribute("text", prettyName(this.flds[x].name)|| ":")
 		CALL l_lab.setAttribute("posY", y)
 		CALL l_lab.setAttribute("posX", 1)
 		CALL l_lab.setAttribute("gridWidth", 18)
@@ -166,6 +169,8 @@ FUNCTION (this rObj) showRecord(l_n om.DomNode)
 		CALL l_lab.setAttribute("justify", "left")
 		LET y += 1
 		FOR x = 1 TO this.methods.getLength()
+			LET l_method = SFMT("%1%2", this.methods[x].name, this.methods[x].signature)
+{ -- alternative way to show the parameters and returns of the function methods.
 			LET l_method = this.methods[x].name || "("
 			FOR z = 1 TO this.methods[x].params.getLength()
 				LET l_method = l_method.append(SFMT("p%1 %2", z, this.methods[x].params[z]))
@@ -180,7 +185,8 @@ FUNCTION (this rObj) showRecord(l_n om.DomNode)
 					LET l_method = l_method.append(", ")
 				END IF
 			END FOR
-			LET l_method = l_method.append(")")
+			LET l_method = l_method.append(")") 
+}
 			LET l_lab    = l_n.createChild("Label")
 			CALL l_lab.setAttribute("text", l_method)
 			CALL l_lab.setAttribute("posY", y)
@@ -224,7 +230,7 @@ FUNCTION (this rObj) showArray(l_n om.DomNode)
 		LET l_fields[x].nam = this.flds[x].name
 		LET l_fields[x].typ = this.flds[x].type
 		LET l_tc            = l_tabl.createChild("TableColumn")
-		CALL l_tc.setAttribute("text", this.flds[x].name)
+		CALL l_tc.setAttribute("text", prettyName(this.flds[x].name))
 		CALL l_tc.setAttribute("colName", this.flds[x].name)
 		CALL l_tc.setAttribute("name", "formonly." || this.flds[x].name)
 		CALL l_tc.setAttribute("varType", this.flds[x].type)

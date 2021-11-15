@@ -2,7 +2,7 @@ IMPORT reflect
 IMPORT FGL introspect.*
 
 TYPE t_rec RECORD
-	num     INTEGER ATTRIBUTE(json_name = "key"),
+	my_key  INTEGER ATTRIBUTE(json_name = "key"),
 	str     STRING,
 	created DATETIME YEAR TO SECOND,
 	cost    DECIMAL(10, 2)
@@ -16,7 +16,7 @@ MAIN
 	DEFINE l_r_arr introspect.rObj.rObj
 
 	FOR x = 1 TO 5
-		LET l_arr[x].num     = x
+		LET l_arr[x].my_key  = x
 		LET l_arr[x].str     = "This is test " || x
 		LET l_arr[x].created = CURRENT
 		LET l_arr[x].cost    = x * .5

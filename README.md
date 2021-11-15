@@ -4,7 +4,7 @@ This project contains the demos used in the "Reflection by Example" presentation
 
 The Demos:
 * rec - A simple record introspection.
-* sql2ar - A simple example of executing an SQL select and loading the result into an array.
+* sql2arr - A simple example of executing an SQL select and loading the result into an array.
 * main - Demostrates using library code to display a record and an array dynamically.
 * sql2arr_cust - Using multiple library to display an array of data from a database table.
 * type - Demostrates introspection of a 'type' that has methods.

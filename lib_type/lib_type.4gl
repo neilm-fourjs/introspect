@@ -46,6 +46,11 @@ FUNCTION (this obj) isEmpty() RETURNS BOOLEAN
 	RETURN l_val.getLength() = 0
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
+FUNCTION (this obj) testNum(l_int INT) RETURNS BOOLEAN
+-- dummy function
+	RETURN TRUE
+END FUNCTION
+--------------------------------------------------------------------------------------------------------------
 FUNCTION (this obj) setValue(l_val STRING) RETURNS BOOLEAN
 	DEFINE l_doc  om.DomDocument
 	DEFINE l_node om.DomNode
