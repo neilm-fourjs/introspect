@@ -9,7 +9,7 @@ MAIN
 		x, y INTEGER
 	END RECORD
 	DEFINE i             INTEGER = 0
-	DEFINE l_reflect_arr introspect.introspect.simpleObj
+	DEFINE l_reflect_arr introspect.rObj.rObj
 
 	-- Populate
 	LET l_arr[i := i + 1].name = "The Cure"

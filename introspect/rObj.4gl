@@ -2,7 +2,7 @@ PACKAGE introspect
 
 IMPORT reflect
 
-PUBLIC TYPE simpleObj RECORD
+PUBLIC TYPE rObj RECORD
 	kind STRING,
 	type STRING,
 	flds DYNAMIC ARRAY OF RECORD
@@ -21,7 +21,7 @@ PUBLIC TYPE simpleObj RECORD
 	rec_count SMALLINT
 END RECORD
 
-FUNCTION (this simpleObj) init(l_rv reflect.Value)
+FUNCTION (this rObj) init(l_rv reflect.Value)
 	DEFINE x, z SMALLINT
 	LET this.kind = l_rv.getType().getKind()
 	LET this.type = l_rv.getType().toString()
@@ -66,7 +66,7 @@ FUNCTION (this simpleObj) init(l_rv reflect.Value)
 	END IF
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
-FUNCTION (this simpleObj) dump()
+FUNCTION (this rObj) dump()
 	DEFINE x, z SMALLINT
 	DISPLAY this.kind
 	IF this.kind = "RECORD" THEN
@@ -105,7 +105,7 @@ FUNCTION (this simpleObj) dump()
 	END IF
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
-FUNCTION (this simpleObj) show()
+FUNCTION (this rObj) show()
 	DEFINE l_n om.DomNode
 	IF this.flds.getLength() = 0 THEN
 		RETURN
@@ -125,7 +125,7 @@ FUNCTION (this simpleObj) show()
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 -- Add the record items to the form and do a simple menu.
-FUNCTION (this simpleObj) showRecord(l_n om.DomNode)
+FUNCTION (this rObj) showRecord(l_n om.DomNode)
 	DEFINE x, y, z  SMALLINT
 	DEFINE l_lab    om.DomNode
 	DEFINE l_ff     om.DomNode
@@ -199,7 +199,7 @@ FUNCTION (this simpleObj) showRecord(l_n om.DomNode)
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 -- create a table build a display array
-FUNCTION (this simpleObj) showArray(l_n om.DomNode)
+FUNCTION (this rObj) showArray(l_n om.DomNode)
 	DEFINE l_d ui.Dialog
 	DEFINE l_fields DYNAMIC ARRAY OF RECORD
 		nam STRING,

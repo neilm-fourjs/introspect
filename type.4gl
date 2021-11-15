@@ -2,7 +2,7 @@ IMPORT reflect
 IMPORT FGL introspect.*
 IMPORT FGL lib_type.*
 MAIN
-	DEFINE l_reflect_rec introspect.introspect.simpleObj
+	DEFINE l_reflect_rec introspect.rObj.rObj
 	DEFINE l_myObj       lib_type.lib_type.obj
 	DEFINE l_myXMLObj    lib_type.lib_type.obj
 
