@@ -12,6 +12,7 @@ The Demos:
 
 The Libraries:
 * custom_sort - The sorting methods.
+* prettyName - Make a column name pretty for a form label / table column title
 * rObj - reflect object to an array and to screen / stdout.
 * sql2array - SQL to an array.
 

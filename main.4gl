@@ -1,4 +1,5 @@
 IMPORT reflect
+IMPORT FGL fgldialog
 IMPORT FGL introspect.*
 
 TYPE t_rec RECORD
@@ -22,17 +23,17 @@ MAIN
 		LET l_arr[x].cost    = x * .5
 	END FOR
 	LET l_rec = l_arr[1]
-
+	CALL fgl_settitle("Reflection Demo")
 	MENU
 		ON ACTION rRec ATTRIBUTES(TEXT = "Reflect Rec")
-			CALL l_r_rec.init(reflect.Value.valueOf(l_rec))
+			CALL l_r_rec.init("l_rec", reflect.Value.valueOf(l_rec))
 			CALL l_r_rec.dump()
-			CALL l_r_rec.show()
+			CALL l_r_rec.show(NULL)
 
 		ON ACTION rArr ATTRIBUTES(TEXT = "Reflect Arr")
-			CALL l_r_arr.init(reflect.Value.valueOf(l_arr))
+			CALL l_r_arr.init("l_arr", reflect.Value.valueOf(l_arr))
 			CALL l_r_arr.dump()
-			CALL l_r_arr.show()
+			CALL l_r_arr.show(NULL)
 
 		ON ACTION quit ATTRIBUTES(TEXT = "Quit")
 			EXIT MENU

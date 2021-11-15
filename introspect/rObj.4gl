@@ -4,6 +4,7 @@ IMPORT reflect
 IMPORT FGL introspect.prettyName
 
 PUBLIC TYPE rObj RECORD
+	name STRING,
 	kind STRING,
 	type STRING,
 	flds DYNAMIC ARRAY OF RECORD
@@ -23,8 +24,9 @@ PUBLIC TYPE rObj RECORD
 	rec_count SMALLINT
 END RECORD
 
-FUNCTION (this rObj) init(l_rv reflect.Value)
+FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 	DEFINE x, z SMALLINT
+	LET this.name = l_nam
 	LET this.kind = l_rv.getType().getKind()
 	LET this.type = l_rv.getType().toString()
 	DISPLAY SFMT("\ninit - Type: %1 Kind: %2 json_name: %3",
@@ -108,13 +110,15 @@ FUNCTION (this rObj) dump()
 	END IF
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
-FUNCTION (this rObj) show()
+FUNCTION (this rObj) show(l_titl STRING)
 	DEFINE l_n om.DomNode
 	IF this.flds.getLength() = 0 THEN
 		RETURN
 	END IF
 -- open a window and create a form with a grid
 	OPEN WINDOW intro_show AT 1, 1 WITH 1 ROWS, 1 COLUMNS
+	IF l_titl IS NULL THEN LET l_titl = SFMT("Show Introspection of '%1'", this.name) END IF
+	CALL ui.Window.getCurrent().setText(l_titl)
 	LET l_n = ui.Window.getCurrent().createForm("intro_show").getNode().createChild('Grid')
 	CALL l_n.setAttribute("width", 100)
 	CALL l_n.setAttribute("gridWidth", 100)

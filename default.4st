@@ -10,6 +10,9 @@ Property of Four Js*
 -->
 
 <StyleList>
+  <Style name="Label">
+     <StyleAttribute name="fontWeight" value="bold" />
+  </Style>
   <Style name="Table">
      <StyleAttribute name="headerAlignment" value="auto" />
   </Style>

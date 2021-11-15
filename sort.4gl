@@ -31,7 +31,7 @@ MAIN
 		LET l_arr[i].x   = util.Math.rand(10)
 		LET l_arr[i].y   = util.Math.rand(10)
 	END FOR
-
+	CALL fgl_settitle("Sort Demo")
 	MENU
 		COMMAND "iTunes Sort ignoring 'The '"
 			DISPLAY "*** iTunes Sort ignoring 'The '"
@@ -39,8 +39,8 @@ MAIN
 			FOR i = 1 TO l_arr.getLength()
 				DISPLAY l_arr[i].idx, ":", l_arr[i].name
 			END FOR
-			CALL l_reflect_arr.init(reflect.Value.valueOf(l_arr))
-			CALL l_reflect_arr.show()
+			CALL l_reflect_arr.init("l_arr", reflect.Value.valueOf(l_arr))
+			CALL l_reflect_arr.show("iTunes Sort")
 
 		COMMAND "Length Sort"
 			DISPLAY "\n*** Length Sort"
@@ -48,8 +48,8 @@ MAIN
 			FOR i = 1 TO l_arr.getLength()
 				DISPLAY l_arr[i].idx, ":", l_arr[i].name
 			END FOR
-			CALL l_reflect_arr.init(reflect.Value.valueOf(l_arr))
-			CALL l_reflect_arr.show()
+			CALL l_reflect_arr.init("l_arr", reflect.Value.valueOf(l_arr))
+			CALL l_reflect_arr.show("Length Sort")
 
 		COMMAND "Distance Sort"
 			DISPLAY "\n*** Distance Sort"
@@ -57,8 +57,8 @@ MAIN
 			FOR i = 1 TO l_arr.getLength()
 				DISPLAY l_arr[i].idx, ":", l_arr[i].name, " ", l_arr[i].x USING "&", ",", l_arr[i].y USING "&"
 			END FOR
-			CALL l_reflect_arr.init(reflect.Value.valueOf(l_arr))
-			CALL l_reflect_arr.show()
+			CALL l_reflect_arr.init("l_arr", reflect.Value.valueOf(l_arr))
+			CALL l_reflect_arr.show("Distance Sort")
 
 		COMMAND "Quit"
 			EXIT MENU

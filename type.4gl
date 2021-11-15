@@ -18,8 +18,8 @@ MAIN
 	DISPLAY "Obj Created."
 	CALL testIt()
 
-	CALL l_reflect_rec.init(reflect.Value.valueOf(m_myObj))
-	CALL l_reflect_rec.show()
+	CALL l_reflect_rec.init("m_myObj", reflect.Value.valueOf(m_myObj))
+	CALL l_reflect_rec.show("Custom Object with Methods")
 
 	DISPLAY "Program Finished."
 
