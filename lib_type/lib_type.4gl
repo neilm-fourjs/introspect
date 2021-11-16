@@ -46,8 +46,8 @@ FUNCTION (this obj) isEmpty() RETURNS BOOLEAN
 	RETURN l_val.getLength() = 0
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
-FUNCTION (this obj) testNum(l_int INT) RETURNS BOOLEAN
 -- dummy function
+FUNCTION (this obj) testNum(l_int INT) RETURNS BOOLEAN
 	RETURN TRUE
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------

@@ -21,7 +21,7 @@ MAIN
 
 	CALL l_r_rec.init("m_myObj", reflect.Value.valueOf(m_myObj))
 	CALL l_r_rec.dump()
-	CALL l_dUI.show("Custom Object with Methods", l_r_rec)
+	CALL l_dUI.show("Custom Object with Methods", l_r_rec, l_wait: TRUE )
 
 	DISPLAY "Program Finished."
 

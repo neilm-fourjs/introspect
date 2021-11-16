@@ -3,6 +3,7 @@ PACKAGE introspect
 IMPORT reflect
 
 PUBLIC TYPE rObj RECORD
+	reflectV  reflect.Value,
 	name      STRING,
 	kind      STRING,
 	type      STRING,
@@ -22,13 +23,14 @@ PUBLIC TYPE rObj RECORD
 		signature STRING
 	END RECORD,
 	rec_count SMALLINT,
-	line INT,
-	module STRING
+	line      INT,
+	module    STRING
 END RECORD
 
 FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 	DEFINE x, z SMALLINT
 	INITIALIZE this TO NULL
+	LET this.reflectV  = l_rv
 	LET this.name      = l_nam
 	LET this.kind      = l_rv.getType().getKind()
 	LET this.type      = l_rv.getType().toString()
@@ -76,14 +78,16 @@ END FUNCTION
 FUNCTION (this rObj) dump()
 	DEFINE x, z SMALLINT
 	IF this.module IS NULL THEN
-		DISPLAY SFMT("\nDump - Name: %1 Type: %2 Kind: %3 json_name: %4",this.name, this.type, this.kind, this.json_name)
+		DISPLAY SFMT("\nDump - Name: %1 Type: %2 Kind: %3 json_name: %4", this.name, this.type, this.kind, this.json_name)
 	ELSE
-		DISPLAY SFMT("\nDebug:%1:%2 Name: %3 Type: %4 Kind: %5 json_name: %6",this.module, this.line, this.name, this.type, this.kind, this.json_name)
+		DISPLAY SFMT("\nDebug:%1:%2 Name: %3 Type: %4 Kind: %5 json_name: %6",
+				this.module, this.line, this.name, this.type, this.kind, this.json_name)
 	END IF
 	IF this.kind = "RECORD" THEN
 		DISPLAY "Fields:"
 		FOR x = 1 TO this.flds.getLength()
-			DISPLAY SFMT("%1) %2 %3 Length: %4", x, this.flds[x].name, this.flds[x].type, this.flds[x].len)
+			DISPLAY SFMT("%1) %2 %3 Length: %4 Value: %5",
+					x, this.flds[x].name, this.flds[x].type, this.flds[x].len, this.flds[x].values[1])
 		END FOR
 		DISPLAY IIF(this.methods.getLength() > 0, "Methods:", "No Methods.")
 		FOR x = 1 TO this.methods.getLength()
@@ -123,7 +127,7 @@ END FUNCTION
 FUNCTION debug_dump(l_mod STRING, l_line INT, l_nam STRING, l_rv reflect.Value)
 	DEFINE l_rObj rObj
 	CALL l_rObj.init(l_nam, l_rv)
-	LET l_rObj.line = l_line
+	LET l_rObj.line   = l_line
 	LET l_rObj.module = l_mod
 	CALL l_rObj.dump()
 END FUNCTION

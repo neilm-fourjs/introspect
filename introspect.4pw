@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Project defaultApplication="-1429969501" gstVersion="40003" version="3.4">
+<Project defaultApplication="-1077291310" gstVersion="40003" version="3.4">
   <Settings>
     <DynamicProperties version="4">
       <DynamicProperty description="Accent color (Android 5.0 and later)" initialValue="#9575CD" isDefaultInherited="false" isHidden="false" label="Accent color" name="gma-accent-color" readOnly="false" type="COLOR"/>
@@ -93,6 +93,10 @@
     <Library binaryName="DB" id="-1396939974" label="DB">
       <File filePath="njm_demo310.4db"/>
     </Library>
+    <Application binaryName="interactive" dependencies="14000" id="-629657477" label="interactive">
+      <Configuration id="-1077291310" label="Configuration"/>
+      <File filePath="interactive.4gl"/>
+    </Application>
     <Application binaryName="main" dependencies="14000,1986" id="18736" label="main" language="Genero (no link)">
       <Configuration id="-1429969501" label="Configuration"/>
       <File filePath="main.4gl"/>

@@ -38,11 +38,11 @@ MAIN
 
 		ON ACTION uirRec ATTRIBUTES(TEXT = "UI Rec")
 			CALL l_r.init("l_rec", reflect.Value.valueOf(l_rec))
-			CALL l_dUI.show(NULL, l_r)
+			CALL l_dUI.show(l_titl: NULL, l_rObj: l_r, l_wait: TRUE)
 
 		ON ACTION uirArr ATTRIBUTES(TEXT = "UI Arr")
 			CALL l_r.init("l_arr", reflect.Value.valueOf(l_arr))
-			CALL l_dUI.show(NULL, l_r)
+			CALL l_dUI.show(l_titl: NULL, l_rObj: l_r, l_wait: TRUE)
 
 		ON ACTION debug ATTRIBUTES(TEXT = "Debug Dump")
 			DEBUG_DUMP("l_rec", l_rec)
