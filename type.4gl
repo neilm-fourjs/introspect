@@ -2,9 +2,10 @@ IMPORT reflect
 IMPORT FGL introspect.*
 IMPORT FGL lib_type.*
 
-DEFINE m_myObj    lib_type.lib_type.obj
+DEFINE m_myObj lib_type.lib_type.obj
 MAIN
-	DEFINE l_reflect_rec introspect.rObj.rObj
+	DEFINE l_r_rec introspect.rObj.rObj
+	DEFINE l_dUI   introspect.dynUI.dUI
 
 	IF NOT m_myObj.isCreated() THEN
 		IF NOT m_myObj.init(NULL, NULL, NULL, FUNCTION chkString) THEN
@@ -18,8 +19,8 @@ MAIN
 	DISPLAY "Obj Created."
 	CALL testIt()
 
-	CALL l_reflect_rec.init("m_myObj", reflect.Value.valueOf(m_myObj))
-	CALL l_reflect_rec.show("Custom Object with Methods")
+	CALL l_r_rec.init("m_myObj", reflect.Value.valueOf(m_myObj))
+	CALL l_dUI.show("Custom Object with Methods", l_r_rec)
 
 	DISPLAY "Program Finished."
 

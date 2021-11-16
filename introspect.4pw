@@ -70,24 +70,28 @@
   <Group id="-1826451572" label="_IntrospectionLibrary" language="Genero">
     <Library binaryName="introspect" dependencies="1986" id="14000" label="introspect" language="Genero (no link)">
       <File filePath="introspect/custom_sort.4gl"/>
+      <File filePath="introspect/dynUI.4gl"/>
       <File filePath="introspect/prettyName.4gl"/>
       <File filePath="introspect/rObj.4gl"/>
       <File filePath="introspect/sql2array.4gl"/>
     </Library>
   </Group>
-  <Group id="1388735151" label="Demo1" language="Genero (no link)">
+  <Group id="1388735151" label="Demo1 Simple Record" language="Genero (no link)">
     <Application binaryName="rec" id="-1034729039" label="rec">
       <Configuration id="1326750722" label="Configuration"/>
       <File filePath="rec.4gl"/>
     </Application>
   </Group>
-  <Group id="-1524964217" label="Demo2" language="Genero (no link)">
+  <Group id="-1524964217" label="Demo2 SQL To Array" language="Genero (no link)">
     <Application binaryName="sql2arr" dependencies="14000" id="-1501241838" label="sql2arr">
       <Configuration id="957178861" label="Configuration"/>
       <File filePath="sql2arr.4gl"/>
     </Application>
   </Group>
-  <Group id="75644415" label="Demo3" language="Genero (no link)">
+  <Group id="75644415" label="Demo3 Library Example" language="Genero (no link)">
+    <Library binaryName="DB" id="-1396939974" label="DB">
+      <File filePath="njm_demo310.4db"/>
+    </Library>
     <Application binaryName="main" dependencies="14000,1986" id="18736" label="main" language="Genero (no link)">
       <Configuration id="-1429969501" label="Configuration"/>
       <File filePath="main.4gl"/>
@@ -97,7 +101,7 @@
       <File filePath="sql2arr_cust.4gl"/>
     </Application>
   </Group>
-  <Group id="577624386" label="Demo4" language="Genero (no link)">
+  <Group id="577624386" label="Demo4 Types" language="Genero (no link)">
     <Library binaryName="lib_type" id="1309714501" label="lib_type">
       <File filePath="lib_type/lib_type.4gl"/>
     </Library>
@@ -106,10 +110,7 @@
       <File filePath="type.4gl"/>
     </Application>
   </Group>
-  <Group id="-138630817" label="MoreDemos" language="Genero (no link)">
-    <Library binaryName="DB" id="-1396939974" label="DB">
-      <File filePath="njm_demo310.4db"/>
-    </Library>
+  <Group id="-138630817" label="Demo5 Sorting" language="Genero (no link)">
     <Application binaryName="sort" id="-591843457" label="sort">
       <Configuration id="-1941066233" label="Configuration"/>
       <File filePath="sort.4gl"/>

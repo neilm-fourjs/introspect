@@ -1,12 +1,12 @@
 PACKAGE introspect
 
 IMPORT reflect
-IMPORT FGL introspect.prettyName
 
 PUBLIC TYPE rObj RECORD
-	name STRING,
-	kind STRING,
-	type STRING,
+	name      STRING,
+	kind      STRING,
+	type      STRING,
+	json_name STRING,
 	flds DYNAMIC ARRAY OF RECORD
 		name   STRING,
 		type   STRING,
@@ -16,9 +16,9 @@ PUBLIC TYPE rObj RECORD
 		values DYNAMIC ARRAY OF STRING
 	END RECORD,
 	methods DYNAMIC ARRAY OF RECORD
-		name    STRING,
-		params  DYNAMIC ARRAY OF STRING,
-		returns DYNAMIC ARRAY OF STRING,
+		name      STRING,
+		params    DYNAMIC ARRAY OF STRING,
+		returns   DYNAMIC ARRAY OF STRING,
 		signature STRING
 	END RECORD,
 	rec_count SMALLINT
@@ -26,11 +26,11 @@ END RECORD
 
 FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 	DEFINE x, z SMALLINT
-	LET this.name = l_nam
-	LET this.kind = l_rv.getType().getKind()
-	LET this.type = l_rv.getType().toString()
-	DISPLAY SFMT("\ninit - Type: %1 Kind: %2 json_name: %3",
-			this.type, this.kind, l_rv.getType().getAttribute("json_name"))
+	INITIALIZE this TO NULL
+	LET this.name      = l_nam
+	LET this.kind      = l_rv.getType().getKind()
+	LET this.type      = l_rv.getType().toString()
+	LET this.json_name = l_rv.getType().getAttribute("json_name")
 
 	IF this.kind = "RECORD" THEN
 		FOR x = 1 TO l_rv.getType().getFieldCount() -- Loop thru fields
@@ -43,7 +43,7 @@ FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 		END FOR
 		FOR x = 1 TO l_rv.getType().getMethodCount() -- Loop thru methods
 			VAR l_em reflect.Method = l_rv.getType().getMethod(x)
-			LET this.methods[x].name = l_em.getName()
+			LET this.methods[x].name      = l_em.getName()
 			LET this.methods[x].signature = l_em.getSignature()
 			FOR z = 1 TO l_em.getParameterCount() -- Loop thru Input Parameters
 				LET this.methods[x].params[z] = l_em.getParameterType(z).toString()
@@ -73,13 +73,14 @@ END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 FUNCTION (this rObj) dump()
 	DEFINE x, z SMALLINT
-	DISPLAY this.kind
+
+	DISPLAY SFMT("\ndump - Type: %1 Kind: %2 json_name: %3", this.type, this.kind, this.json_name)
 	IF this.kind = "RECORD" THEN
 		DISPLAY "Fields:"
 		FOR x = 1 TO this.flds.getLength()
 			DISPLAY SFMT("%1) %2 %3 Length: %4", x, this.flds[x].name, this.flds[x].type, this.flds[x].len)
 		END FOR
-		DISPLAY "Methods:"
+		DISPLAY IIF(this.methods.getLength() > 0, "Methods:", "No Methods.")
 		FOR x = 1 TO this.methods.getLength()
 			IF this.methods[x].params.getLength() > 0 THEN
 				DISPLAY SFMT("%1) %2(", x, this.methods[x].name)
@@ -109,168 +110,6 @@ FUNCTION (this rObj) dump()
 		END FOR
 	END IF
 END FUNCTION
---------------------------------------------------------------------------------------------------------------
-FUNCTION (this rObj) show(l_titl STRING)
-	DEFINE l_n om.DomNode
-	IF this.flds.getLength() = 0 THEN
-		RETURN
-	END IF
--- open a window and create a form with a grid
-	OPEN WINDOW intro_show AT 1, 1 WITH 1 ROWS, 1 COLUMNS
-	IF l_titl IS NULL THEN LET l_titl = SFMT("Show Introspection of '%1'", this.name) END IF
-	CALL ui.Window.getCurrent().setText(l_titl)
-	LET l_n = ui.Window.getCurrent().createForm("intro_show").getNode().createChild('Grid')
-	CALL l_n.setAttribute("width", 100)
-	CALL l_n.setAttribute("gridWidth", 100)
-	IF this.kind = "RECORD" THEN
-		CALL this.showRecord(l_n)
-	END IF
-	IF this.kind = "ARRAY" THEN
-		CALL this.showArray(l_n)
-	END IF
-	CLOSE WINDOW intro_show
-END FUNCTION
---------------------------------------------------------------------------------------------------------------
--- Add the record items to the form and do a simple menu.
-FUNCTION (this rObj) showRecord(l_n om.DomNode)
-	DEFINE x, y SMALLINT
-	DEFINE l_lab    om.DomNode
-	DEFINE l_ff     om.DomNode
-	DEFINE l_method STRING
-	LET y = 1
-	FOR x = 1 TO this.flds.getLength()
-		LET l_lab = l_n.createChild("Label")
-		CALL l_lab.setAttribute("text", prettyName(this.flds[x].name)|| ":")
-		CALL l_lab.setAttribute("posY", y)
-		CALL l_lab.setAttribute("posX", 1)
-		CALL l_lab.setAttribute("gridWidth", 18)
-		CALL l_lab.setAttribute("justify", "right")
-
-		LET l_ff = l_n.createChild("FormField")
-		CALL l_ff.setAttribute("colName", this.flds[x].name)
-		CALL l_ff.setAttribute("name", "formonly." || this.flds[x].name)
-		CALL l_ff.setAttribute("value", this.flds[x].values[1])
-		IF this.flds[x].func THEN
-			CALL l_ff.setAttribute("value", this.flds[x].type)
-		END IF
-		CALL l_ff.setAttribute("numAlign", this.flds[x].num)
-		CALL l_ff.setAttribute("varType", this.flds[x].type)
-		LET l_ff = l_ff.createChild("Edit")
-		CALL l_ff.setAttribute("name", this.flds[x].name)
-		CALL l_ff.setAttribute("posY", y)
-		CALL l_ff.setAttribute("posX", 20)
-		CALL l_ff.setAttribute("width", this.flds[x].len)
-		CALL l_ff.setAttribute("gridWidth", this.flds[x].len)
-		CALL l_ff.setAttribute("comment", this.flds[x].type)
-		LET y += 1
-	END FOR
-	IF this.methods.getLength() > 0 THEN
-		LET l_lab = l_n.createChild("Label")
-		CALL l_lab.setAttribute("text", "Methods:")
-		CALL l_lab.setAttribute("posY", y)
-		CALL l_lab.setAttribute("posX", 1)
-		CALL l_lab.setAttribute("gridWidth", 20)
-		CALL l_lab.setAttribute("justify", "left")
-		LET y += 1
-		FOR x = 1 TO this.methods.getLength()
-			LET l_method = SFMT("%1%2", this.methods[x].name, this.methods[x].signature)
-{ -- alternative way to show the parameters and returns of the function methods.
-			LET l_method = this.methods[x].name || "("
-			FOR z = 1 TO this.methods[x].params.getLength()
-				LET l_method = l_method.append(SFMT("p%1 %2", z, this.methods[x].params[z]))
-				IF z < this.methods[x].params.getLength() THEN
-					LET l_method = l_method.append(", ")
-				END IF
-			END FOR
-			LET l_method = l_method.append(") RETURNS (")
-			FOR z = 1 TO this.methods[x].returns.getLength()
-				LET l_method = l_method.append(SFMT("%1", this.methods[x].returns[z]))
-				IF z < this.methods[x].returns.getLength() THEN
-					LET l_method = l_method.append(", ")
-				END IF
-			END FOR
-			LET l_method = l_method.append(")") 
-}
-			LET l_lab    = l_n.createChild("Label")
-			CALL l_lab.setAttribute("text", l_method)
-			CALL l_lab.setAttribute("posY", y)
-			CALL l_lab.setAttribute("posX", 1)
-			CALL l_lab.setAttribute("gridWidth", l_method.getLength())
-			CALL l_lab.setAttribute("fontPitch", "fixed")
-			LET y += 1
-		END FOR
-	END IF
-	MENU
-		ON ACTION back ATTRIBUTES(TEXT = "Back")
-			EXIT MENU
-		ON ACTION close
-			EXIT MENU
-	END MENU
-END FUNCTION
---------------------------------------------------------------------------------------------------------------
--- create a table build a display array
-FUNCTION (this rObj) showArray(l_n om.DomNode)
-	DEFINE l_d ui.Dialog
-	DEFINE l_fields DYNAMIC ARRAY OF RECORD
-		nam STRING,
-		typ STRING
-	END RECORD
-	DEFINE l_tabl, l_tc om.DomNode
-	DEFINE l_event      STRING
-	DEFINE l_tabn       STRING
-	DEFINE x, z         SMALLINT
-
-	LET l_tabl = l_n.createChild("Table")
-	LET l_tabn = "tablistv"
-	CALL l_tabl.setAttribute("tabName", l_tabn)
-	CALL l_tabl.setAttribute("width", 100)
-	CALL l_tabl.setAttribute("gridWidth", 100)
-	CALL l_tabl.setAttribute("height", "20")
-	CALL l_tabl.setAttribute("pageSize", "20")
-	CALL l_tabl.setAttribute("posY", "1")
-
-	-- add the columns to the table build our 'fields' list.
-	FOR x = 1 TO this.flds.getLength()
-		LET l_fields[x].nam = this.flds[x].name
-		LET l_fields[x].typ = this.flds[x].type
-		LET l_tc            = l_tabl.createChild("TableColumn")
-		CALL l_tc.setAttribute("text", prettyName(this.flds[x].name))
-		CALL l_tc.setAttribute("colName", this.flds[x].name)
-		CALL l_tc.setAttribute("name", "formonly." || this.flds[x].name)
-		CALL l_tc.setAttribute("varType", this.flds[x].type)
-		CALL l_tc.setAttribute("numAlign", this.flds[x].num)
-		LET l_tc = l_tc.createChild("Edit")
-		CALL l_tc.setAttribute("width", this.flds[x].len)
-	END FOR
-
-	-- create a dialog object and populate it.
-	LET l_d = ui.Dialog.createDisplayArrayTo(l_fields, l_tabn)
-	FOR z = 1 TO this.flds[1].values.getLength() -- loop through array items
-		CALL l_d.setCurrentRow(l_tabn, z)
-		FOR x = 1 TO this.flds.getLength() -- loop though fields in the record
-			CALL l_d.setFieldValue(l_fields[x].nam, this.flds[x].values[z])
-		END FOR
-		CALL l_d.setCurrentRow(l_tabn, 1) -- force the first row to be the current row.
-	END FOR
-
-	-- add our default actions to the dialog
-	CALL l_d.addTrigger("ON ACTION close")
-	CALL l_d.addTrigger("ON ACTION back")
-	CALL l_d.setActionAttribute("back", "text", "Back")
-
-	-- loop getting events from the dialog object
-	WHILE TRUE
-		LET l_event = l_d.nextEvent()
-		CASE l_event
-			WHEN "ON ACTION close"
-				EXIT WHILE
-			WHEN "ON ACTION back"
-				EXIT WHILE
-		END CASE
-	END WHILE
-	CALL l_d.close()
-END FUNCTION
-
 --------------------------------------------------------------------------------------------------------------
 -- find the length of the field and if it's numeric or not
 -- @returns length ( smallint ), isnumeric ( boolean )

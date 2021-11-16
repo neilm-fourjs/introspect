@@ -20,7 +20,7 @@ MAIN
 
 -- display the results
 	FOR x = 1 TO l_arr.getLength()
-		DISPLAY SFMT("%1 %2", l_arr[x].idx, l_arr[x].dat )
+		DISPLAY SFMT("%1 %2", l_arr[x].idx, l_arr[x].dat)
 	END FOR
 
 END MAIN

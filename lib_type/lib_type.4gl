@@ -99,7 +99,7 @@ FUNCTION (this obj) setValue(l_val STRING) RETURNS BOOLEAN
 	RETURN TRUE
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
-PRIVATE FUNCTION (this obj) setError(l_func STRING, l_err STRING) RETURNS ()
+PRIVATE FUNCTION (this obj) setError(l_func STRING, l_err STRING) RETURNS()
 	IF this.last_error IS NULL THEN
 		LET this.last_error = SFMT("%1) %2", l_func, l_err)
 		RETURN

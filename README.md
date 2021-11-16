@@ -11,7 +11,8 @@ The Demos:
 * sort - Demostrates a library that sorts an array using a varity of sorting styles.
 
 The Libraries:
-* custom_sort - The sorting methods.
+* custom_sort - Custom sorting methods.
+* dynUI - Library to get the record structure from rObj and show a UI.
 * prettyName - Make a column name pretty for a form label / table column title
 * rObj - reflect object to an array and to screen / stdout.
 * sql2array - SQL to an array.

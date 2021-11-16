@@ -10,11 +10,11 @@ TYPE t_rec RECORD
 END RECORD
 
 MAIN
-	DEFINE l_rec   t_rec ATTRIBUTE(json_name = "l_rec")
-	DEFINE l_arr   DYNAMIC ARRAY OF t_rec ATTRIBUTE(json_name = "l_arr")
-	DEFINE x       SMALLINT
-	DEFINE l_r_rec introspect.rObj.rObj
-	DEFINE l_r_arr introspect.rObj.rObj
+	DEFINE l_rec t_rec ATTRIBUTE(json_name = "l_rec")
+	DEFINE l_arr DYNAMIC ARRAY OF t_rec ATTRIBUTE(json_name = "l_arr")
+	DEFINE x     SMALLINT
+	DEFINE l_r   introspect.rObj.rObj
+	DEFINE l_dUI introspect.dynUI.dUI
 
 	FOR x = 1 TO 5
 		LET l_arr[x].my_key   = x
@@ -23,17 +23,24 @@ MAIN
 		LET l_arr[x].cost     = x * .5
 	END FOR
 	LET l_rec = l_arr[1]
+
 	CALL fgl_settitle("Reflection Demo")
 	MENU
-		ON ACTION rRec ATTRIBUTES(TEXT = "Reflect Rec")
-			CALL l_r_rec.init("l_rec", reflect.Value.valueOf(l_rec))
-			CALL l_r_rec.dump()
-			CALL l_r_rec.show(NULL)
+		ON ACTION dumprRec ATTRIBUTES(TEXT = "Dump Rec")
+			CALL l_r.init("l_rec", reflect.Value.valueOf(l_rec))
+			CALL l_r.dump()
 
-		ON ACTION rArr ATTRIBUTES(TEXT = "Reflect Arr")
-			CALL l_r_arr.init("l_arr", reflect.Value.valueOf(l_arr))
-			CALL l_r_arr.dump()
-			CALL l_r_arr.show(NULL)
+		ON ACTION dumprArr ATTRIBUTES(TEXT = "Dump Arr")
+			CALL l_r.init("l_arr", reflect.Value.valueOf(l_arr))
+			CALL l_r.dump()
+
+		ON ACTION uirRec ATTRIBUTES(TEXT = "UI Rec")
+			CALL l_r.init("l_rec", reflect.Value.valueOf(l_rec))
+			CALL l_dUI.show(NULL, l_r)
+
+		ON ACTION uirArr ATTRIBUTES(TEXT = "UI Arr")
+			CALL l_r.init("l_arr", reflect.Value.valueOf(l_arr))
+			CALL l_dUI.show(NULL, l_r)
 
 		ON ACTION quit ATTRIBUTES(TEXT = "Quit")
 			EXIT MENU
