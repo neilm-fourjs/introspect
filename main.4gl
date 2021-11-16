@@ -2,6 +2,8 @@ IMPORT reflect
 IMPORT FGL fgldialog
 IMPORT FGL introspect.*
 
+&include "debug_dump.inc"
+
 TYPE t_rec RECORD
 	my_key   INTEGER ATTRIBUTE(json_name = "key"),
 	a_string STRING,
@@ -41,6 +43,9 @@ MAIN
 		ON ACTION uirArr ATTRIBUTES(TEXT = "UI Arr")
 			CALL l_r.init("l_arr", reflect.Value.valueOf(l_arr))
 			CALL l_dUI.show(NULL, l_r)
+
+		ON ACTION debug ATTRIBUTES(TEXT = "Debug Dump")
+			DEBUG_DUMP("l_rec", l_rec)
 
 		ON ACTION quit ATTRIBUTES(TEXT = "Quit")
 			EXIT MENU

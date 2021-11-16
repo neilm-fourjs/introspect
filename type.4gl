@@ -20,6 +20,7 @@ MAIN
 	CALL testIt()
 
 	CALL l_r_rec.init("m_myObj", reflect.Value.valueOf(m_myObj))
+	CALL l_r_rec.dump()
 	CALL l_dUI.show("Custom Object with Methods", l_r_rec)
 
 	DISPLAY "Program Finished."

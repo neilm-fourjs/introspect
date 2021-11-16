@@ -21,7 +21,9 @@ PUBLIC TYPE rObj RECORD
 		returns   DYNAMIC ARRAY OF STRING,
 		signature STRING
 	END RECORD,
-	rec_count SMALLINT
+	rec_count SMALLINT,
+	line INT,
+	module STRING
 END RECORD
 
 FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
@@ -73,8 +75,11 @@ END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 FUNCTION (this rObj) dump()
 	DEFINE x, z SMALLINT
-
-	DISPLAY SFMT("\ndump - Type: %1 Kind: %2 json_name: %3", this.type, this.kind, this.json_name)
+	IF this.module IS NULL THEN
+		DISPLAY SFMT("\nDump - Name: %1 Type: %2 Kind: %3 json_name: %4",this.name, this.type, this.kind, this.json_name)
+	ELSE
+		DISPLAY SFMT("\nDebug:%1:%2 Name: %3 Type: %4 Kind: %5 json_name: %6",this.module, this.line, this.name, this.type, this.kind, this.json_name)
+	END IF
 	IF this.kind = "RECORD" THEN
 		DISPLAY "Fields:"
 		FOR x = 1 TO this.flds.getLength()
@@ -109,6 +114,18 @@ FUNCTION (this rObj) dump()
 			END FOR
 		END FOR
 	END IF
+END FUNCTION
+--------------------------------------------------------------------------------------------------------------
+-- Debug dump of data
+-- used via the preprocessor - see debug_dump.inc
+-- &define DEBUG_DUMP( nam, rv ) \
+--	CALL debug_dump(__FILE__, __LINE__, nam, reflect.Value.valueOf(rv))
+FUNCTION debug_dump(l_mod STRING, l_line INT, l_nam STRING, l_rv reflect.Value)
+	DEFINE l_rObj rObj
+	CALL l_rObj.init(l_nam, l_rv)
+	LET l_rObj.line = l_line
+	LET l_rObj.module = l_mod
+	CALL l_rObj.dump()
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 -- find the length of the field and if it's numeric or not

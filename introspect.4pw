@@ -70,6 +70,7 @@
   <Group id="-1826451572" label="_IntrospectionLibrary" language="Genero">
     <Library binaryName="introspect" dependencies="1986" id="14000" label="introspect" language="Genero (no link)">
       <File filePath="introspect/custom_sort.4gl"/>
+      <File filePath="introspect/debug_dump.inc"/>
       <File filePath="introspect/dynUI.4gl"/>
       <File filePath="introspect/prettyName.4gl"/>
       <File filePath="introspect/rObj.4gl"/>
