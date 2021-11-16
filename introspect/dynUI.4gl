@@ -22,7 +22,7 @@ FUNCTION (this dUI) show(l_titl STRING, l_rObj rObj, l_wait BOOLEAN)
 	IF this.rObj.flds.getLength() = 0 THEN
 		RETURN
 	END IF
-	BREAKPOINT
+--	BREAKPOINT
 	IF NOT this.windowOpen THEN
 -- open a window and create a form with a grid
 		OPEN WINDOW dUI AT 1, 1 WITH 1 ROWS, 1 COLUMNS
@@ -34,13 +34,14 @@ FUNCTION (this dUI) show(l_titl STRING, l_rObj rObj, l_wait BOOLEAN)
 		LET l_n = ui.Window.getCurrent().createForm("dUI").getNode().createChild('Grid')
 		CALL l_n.setAttribute("width", 100)
 		CALL l_n.setAttribute("gridWidth", 100)
-	END IF
-	IF this.rObj.kind = "RECORD" THEN
-		CALL this.showRecord(l_n)
-	END IF
-	IF this.rObj.kind = "ARRAY" THEN
-		CALL this.showArray("tablistv", l_n)
-		LET x = this.displayArray("tablistv", FALSE)
+
+		IF this.rObj.kind = "RECORD" THEN
+			CALL this.showRecord(l_n)
+		END IF
+		IF this.rObj.kind = "ARRAY" THEN
+			CALL this.showArray("tablistv", l_n)
+			LET x = this.displayArray("tablistv", FALSE) -- display the array but exit.
+		END IF
 	END IF
 	IF l_wait THEN
 		MENU
