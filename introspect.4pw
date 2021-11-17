@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Project defaultApplication="-1077291310" gstVersion="40003" version="3.4">
+<Project defaultApplication="-1429969501" gstVersion="40003" version="3.4">
   <Settings>
     <DynamicProperties version="4">
       <DynamicProperty description="Accent color (Android 5.0 and later)" initialValue="#9575CD" isDefaultInherited="false" isHidden="false" label="Accent color" name="gma-accent-color" readOnly="false" type="COLOR"/>
@@ -79,7 +79,7 @@
   </Group>
   <Group id="1388735151" label="Demo1 Simple Record" language="Genero (no link)">
     <Application binaryName="rec" id="-1034729039" label="rec">
-      <Configuration id="1326750722" label="Configuration"/>
+      <Configuration environment="value:FGLGUI=0" id="1326750722" label="Configuration"/>
       <File filePath="rec.4gl"/>
     </Application>
   </Group>

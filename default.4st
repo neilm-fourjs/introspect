@@ -10,7 +10,7 @@ Property of Four Js*
 -->
 
 <StyleList>
-  <Style name="Label">
+  <Style name=".bold">
      <StyleAttribute name="fontWeight" value="bold" />
   </Style>
   <Style name="Table">

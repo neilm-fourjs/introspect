@@ -13,7 +13,7 @@ END RECORD
 
 MAIN
 	DEFINE l_rec t_rec ATTRIBUTE(json_name = "l_rec")
-	DEFINE l_arr DYNAMIC ARRAY OF t_rec ATTRIBUTE(json_name = "l_arr")
+	DEFINE l_arr DYNAMIC ARRAY ATTRIBUTE(json_name = "l_arr") OF t_rec
 	DEFINE x     SMALLINT
 	DEFINE l_r   introspect.rObj.rObj
 	DEFINE l_dUI introspect.dynUI.dUI

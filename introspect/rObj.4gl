@@ -9,12 +9,13 @@ PUBLIC TYPE rObj RECORD
 	type      STRING,
 	json_name STRING,
 	flds DYNAMIC ARRAY OF RECORD
-		name   STRING,
-		type   STRING,
-		len    INTEGER,
-		num    BOOLEAN,
-		func   BOOLEAN,
-		values DYNAMIC ARRAY OF STRING
+		name    STRING,
+		type    STRING,
+		len     INTEGER,
+		num     BOOLEAN,
+		func    BOOLEAN,
+		canEdit BOOLEAN,
+		values  DYNAMIC ARRAY OF STRING
 	END RECORD,
 	methods DYNAMIC ARRAY OF RECORD
 		name      STRING,
@@ -41,7 +42,8 @@ FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 			VAR l_et reflect.Type = l_rv.getType()
 			LET this.flds[x].name = l_et.getFieldName(x)
 			LET this.flds[x].type = l_et.getFieldType(x).toString()
-			CALL getTypeLen(this.flds[x].type) RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func
+			CALL getTypeLen(this.flds[x].type)
+					RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func, this.flds[x].canEdit
 			LET this.flds[x].values[1] = l_rv.getField(x).toString()
 			LET this.rec_count         = 1
 		END FOR
@@ -67,7 +69,8 @@ FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 					VAR l_et reflect.Type = l_rv2.getType()
 					LET this.flds[x].name = l_et.getFieldName(x)
 					LET this.flds[x].type = l_et.getFieldType(x).toString()
-					CALL getTypeLen(this.flds[x].type) RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func
+					CALL getTypeLen(this.flds[x].type)
+							RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func, this.flds[x].canEdit
 				END IF
 				LET this.flds[x].values[z] = l_rv2.getField(x).toString()
 			END FOR
@@ -135,11 +138,11 @@ END FUNCTION
 -- find the length of the field and if it's numeric or not
 -- @returns length ( smallint ), isnumeric ( boolean )
 --------------------------------------------------------------------------------------------------------------
-PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN)
+PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN, BOOLEAN)
 	DEFINE z, y, l_len SMALLINT
 	DEFINE l_numalign  BOOLEAN = TRUE
 	DEFINE l_func      BOOLEAN = FALSE
-
+	DEFINE l_canEdit   BOOLEAN = TRUE
 	CASE l_typ
 		WHEN "SMALLINT"
 			LET l_len = 5
@@ -159,17 +162,26 @@ PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN)
 			LET l_len = 17
 		WHEN "DATETIME YEAR TO HOUR"
 			LET l_len = 14
+		OTHERWISE
+			LET l_numalign = FALSE
+			LET l_canEdit = FALSE
 	END CASE
 
 	IF l_typ.subString(1, 8) = "FUNCTION" THEN
 		LET l_len      = l_typ.getLength()
 		LET l_func     = TRUE
+	END IF
+	IF l_typ.subString(1, 4) = "CHAR" OR l_typ.subString(1, 7) = "VARCHAR" OR l_typ.subString(1, 6) = "STRING" THEN
 		LET l_numalign = FALSE
-	ELSE
-		IF l_typ.subString(1, 4) = "CHAR" OR l_typ.subString(1, 7) = "VARCHAR" OR l_typ.subString(1, 6) = "STRING" THEN
-			LET l_numalign = FALSE
-		END IF
+		LET l_canEdit  = TRUE
+	END IF
+	IF l_typ.subString(1, 7) = "DECIMAL" OR l_typ.subString(1, 5) = "MONEY" THEN
+		LET l_numalign = TRUE
+		LET l_canEdit  = TRUE
+	END IF
 
+-- handle length from bracketed size, except for DATETIME and INTERVAL 
+	IF l_typ.subString(1, 8) != "DATETIME" AND l_typ.subString(1, 8) != "INTERVAL" THEN
 		LET z = l_typ.getIndexOf("(", 1)
 		IF z > 0 THEN
 			LET y = l_typ.getIndexOf(",", z)
@@ -179,7 +191,10 @@ PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN)
 			LET l_len = l_typ.subString(z + 1, y - 1)
 		END IF
 	END IF
-	--DISPLAY SFMT("Type: %1 Len: %2 Num: %3 Func: %4", l_typ, l_len, l_numalign, l_func)
 
-	RETURN l_len, l_numalign, l_func
+	--DISPLAY SFMT("Type: %1 Len: %2 Num: %3 Func: %4", l_typ, l_len, l_numalign, l_func)
+	IF NOT l_canEdit THEN
+		LET l_len = l_typ.getLength()
+	END IF
+	RETURN l_len, l_numalign, l_func, l_canEdit
 END FUNCTION

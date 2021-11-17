@@ -11,13 +11,13 @@ PUBLIC TYPE dUI RECORD
 END RECORD
 --------------------------------------------------------------------------------------------------------------
 FUNCTION (this dUI) init(l_rObj rObj)
-	LET this.rObj = l_rObj
+	LET this.rObj       = l_rObj
 	LET this.windowOpen = FALSE
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 FUNCTION (this dUI) show(l_titl STRING, l_rObj rObj, l_wait BOOLEAN)
 	DEFINE l_n om.DomNode
-	DEFINE x INT
+	DEFINE x   INT
 	LET this.rObj = l_rObj
 	IF this.rObj.flds.getLength() = 0 THEN
 		RETURN
@@ -75,17 +75,20 @@ FUNCTION (this dUI) showRecord(l_n om.DomNode)
 		CALL l_lab.setAttribute("posX", 1)
 		CALL l_lab.setAttribute("gridWidth", 18)
 		CALL l_lab.setAttribute("justify", "right")
+		CALL l_lab.setAttribute("style", "bold")
 
 		LET l_ff = l_n.createChild("FormField")
 		CALL l_ff.setAttribute("colName", this.rObj.flds[x].name)
 		CALL l_ff.setAttribute("name", "formonly." || this.rObj.flds[x].name)
-		CALL l_ff.setAttribute("value", this.rObj.flds[x].values[1])
-		IF this.rObj.flds[x].func THEN
-			CALL l_ff.setAttribute("value", this.rObj.flds[x].type)
-		END IF
 		CALL l_ff.setAttribute("numAlign", this.rObj.flds[x].num)
 		CALL l_ff.setAttribute("varType", this.rObj.flds[x].type)
-		LET l_ff = l_ff.createChild("Edit")
+		IF this.rObj.flds[x].canEdit THEN
+			CALL l_ff.setAttribute("value", this.rObj.flds[x].values[1])
+			LET l_ff = l_ff.createChild("Edit")
+		ELSE
+			CALL l_ff.setAttribute("value", this.rObj.flds[x].type)
+			LET l_ff = l_ff.createChild("Label")
+		END IF
 		CALL l_ff.setAttribute("name", this.rObj.flds[x].name)
 		CALL l_ff.setAttribute("posY", y)
 		CALL l_ff.setAttribute("posX", 20)
@@ -139,7 +142,7 @@ FUNCTION (this dUI) showArray(l_tabn STRING, l_n om.DomNode)
 		typ STRING
 	END RECORD
 	DEFINE l_tabl, l_tc om.DomNode
-	DEFINE x         SMALLINT
+	DEFINE x            SMALLINT
 
 	LET l_tabl = l_n.createChild("Table")
 	CALL l_tabl.setAttribute("tabName", l_tabn)
@@ -171,12 +174,12 @@ FUNCTION (this dUI) displayArray(l_tabn STRING, l_interactive BOOLEAN) RETURNS I
 		nam STRING,
 		typ STRING
 	END RECORD
-	DEFINE l_event      STRING
-	DEFINE x, z         SMALLINT
+	DEFINE l_event STRING
+	DEFINE x, z    SMALLINT
 	FOR x = 1 TO this.rObj.flds.getLength()
 		LET l_fields[x].nam = this.rObj.flds[x].name
 		LET l_fields[x].typ = this.rObj.flds[x].type
-END FOR
+	END FOR
 	-- create a dialog object and populate it.
 	LET l_d = ui.Dialog.createDisplayArrayTo(l_fields, l_tabn)
 	FOR z = 1 TO this.rObj.flds[1].values.getLength() -- loop through array items
