@@ -70,7 +70,11 @@ FUNCTION (this dUI) showRecord(l_n om.DomNode)
 	LET y = 1
 	FOR x = 1 TO this.rObj.flds.getLength()
 		LET l_lab = l_n.createChild("Label")
-		CALL l_lab.setAttribute("text", prettyName(this.rObj.flds[x].name) || ":")
+		IF this.rObj.flds[x].json_name IS NOT NULL THEN
+			CALL l_lab.setAttribute("text", this.rObj.flds[x].json_name || ":")
+		ELSE
+			CALL l_lab.setAttribute("text", prettyName(this.rObj.flds[x].name) || ":")
+		END IF
 		CALL l_lab.setAttribute("posY", y)
 		CALL l_lab.setAttribute("posX", 1)
 		CALL l_lab.setAttribute("gridWidth", 18)
@@ -157,7 +161,11 @@ FUNCTION (this dUI) showArray(l_tabn STRING, l_n om.DomNode)
 		LET l_fields[x].nam = this.rObj.flds[x].name
 		LET l_fields[x].typ = this.rObj.flds[x].type
 		LET l_tc            = l_tabl.createChild("TableColumn")
-		CALL l_tc.setAttribute("text", prettyName(this.rObj.flds[x].name))
+		IF this.rObj.flds[x].json_name IS NOT NULL THEN
+			CALL l_tc.setAttribute("text", this.rObj.flds[x].json_name)
+		ELSE
+			CALL l_tc.setAttribute("text", prettyName(this.rObj.flds[x].name))
+		END IF
 		CALL l_tc.setAttribute("colName", this.rObj.flds[x].name)
 		CALL l_tc.setAttribute("name", "formonly." || this.rObj.flds[x].name)
 		CALL l_tc.setAttribute("varType", this.rObj.flds[x].type)

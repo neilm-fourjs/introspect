@@ -9,13 +9,14 @@ PUBLIC TYPE rObj RECORD
 	type      STRING,
 	json_name STRING,
 	flds DYNAMIC ARRAY OF RECORD
-		name    STRING,
-		type    STRING,
-		len     INTEGER,
-		num     BOOLEAN,
-		func    BOOLEAN,
-		canEdit BOOLEAN,
-		values  DYNAMIC ARRAY OF STRING
+		name      STRING,
+		json_name STRING,
+		type      STRING,
+		len       INTEGER,
+		num       BOOLEAN,
+		func      BOOLEAN,
+		canEdit   BOOLEAN,
+		values    DYNAMIC ARRAY OF STRING
 	END RECORD,
 	methods DYNAMIC ARRAY OF RECORD
 		name      STRING,
@@ -38,10 +39,11 @@ FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 	LET this.json_name = l_rv.getType().getAttribute("json_name")
 
 	IF this.kind = "RECORD" THEN
+		VAR l_et reflect.Type = l_rv.getType()
 		FOR x = 1 TO l_rv.getType().getFieldCount() -- Loop thru fields
-			VAR l_et reflect.Type = l_rv.getType()
-			LET this.flds[x].name = l_et.getFieldName(x)
-			LET this.flds[x].type = l_et.getFieldType(x).toString()
+			LET this.flds[x].name      = l_et.getFieldName(x)
+			LET this.flds[x].json_name = l_et.getFieldType(x).getAttribute("json_name")
+			LET this.flds[x].type      = l_et.getFieldType(x).toString()
 			CALL getTypeLen(this.flds[x].type)
 					RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func, this.flds[x].canEdit
 			LET this.flds[x].values[1] = l_rv.getField(x).toString()
@@ -64,10 +66,11 @@ FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 		FOR z = 1 TO this.rec_count -- loop thru array items
 			VAR l_rv2 reflect.Value
 			LET l_rv2 = l_rv.getArrayElement(z)
+			VAR l_et reflect.Type = l_rv2.getType()
 			FOR x = 1 TO l_rv2.getType().getFieldCount() -- loop thru fields
 				IF z = 1 THEN
-					VAR l_et reflect.Type = l_rv2.getType()
 					LET this.flds[x].name = l_et.getFieldName(x)
+					LET this.flds[x].json_name = l_et.getFieldType(x).getAttribute("json_name")
 					LET this.flds[x].type = l_et.getFieldType(x).toString()
 					CALL getTypeLen(this.flds[x].type)
 							RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func, this.flds[x].canEdit
@@ -79,7 +82,8 @@ FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 FUNCTION (this rObj) dump()
-	DEFINE x, z SMALLINT
+	DEFINE x, z   SMALLINT
+	DEFINE l_line STRING
 	IF this.module IS NULL THEN
 		DISPLAY SFMT("\nDump - Name: %1 Type: %2 Kind: %3 json_name: %4", this.name, this.type, this.kind, this.json_name)
 	ELSE
@@ -89,35 +93,28 @@ FUNCTION (this rObj) dump()
 	IF this.kind = "RECORD" THEN
 		DISPLAY "Fields:"
 		FOR x = 1 TO this.flds.getLength()
-			DISPLAY SFMT("%1) %2 %3 Length: %4 Value: %5",
-					x, this.flds[x].name, this.flds[x].type, this.flds[x].len, this.flds[x].values[1])
+			LET l_line =
+					SFMT("%1) %2 %3 Length: %4 Value: %5",
+							x, this.flds[x].name, this.flds[x].type, this.flds[x].len, this.flds[x].values[1])
+			IF this.flds[x].json_name IS NOT NULL THEN
+				LET l_line = l_line.append(SFMT(" json_name: %1", this.flds[x].json_name))
+			END IF
+			DISPLAY l_line
 		END FOR
 		DISPLAY IIF(this.methods.getLength() > 0, "Methods:", "No Methods.")
 		FOR x = 1 TO this.methods.getLength()
-			IF this.methods[x].params.getLength() > 0 THEN
-				DISPLAY SFMT("%1) %2(", x, this.methods[x].name)
-				FOR z = 1 TO this.methods[x].params.getLength()
-					DISPLAY SFMT("  p%1 %2", z, this.methods[x].params[z])
-				END FOR
-				DISPLAY "    )"
-			ELSE
-				DISPLAY SFMT("%1) %2()", x, this.methods[x].name)
-			END IF
-			IF this.methods[x].returns.getLength() > 0 THEN
-				DISPLAY " RETURNS ("
-				FOR z = 1 TO this.methods[x].returns.getLength()
-					DISPLAY SFMT(" %1", this.methods[x].returns[z])
-				END FOR
-				DISPLAY "    )"
-			ELSE
-				DISPLAY " ) RETURNS ()"
-			END IF
+			LET l_line = SFMT("%1) %2%3", x, this.methods[x].name, this.methods[x].signature)
+			DISPLAY l_line
 		END FOR
 	END IF
 	IF this.kind = "ARRAY" THEN
 		FOR z = 1 TO this.rec_count
 			FOR x = 1 TO this.flds.getLength()
-				DISPLAY SFMT("Row %1: %2 = %3 ( %4 )", z, this.flds[x].name, this.flds[x].values[z], this.flds[x].type)
+				LET l_line = SFMT("Row %1: %2 = %3 ( %4 )", z, this.flds[x].name, this.flds[x].values[z], this.flds[x].type)
+				IF this.flds[x].json_name IS NOT NULL THEN
+					LET l_line = l_line.append(SFMT(" json_name: %1", this.flds[x].json_name))
+				END IF
+				DISPLAY l_line
 			END FOR
 		END FOR
 	END IF
@@ -164,12 +161,12 @@ PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN, BO
 			LET l_len = 14
 		OTHERWISE
 			LET l_numalign = FALSE
-			LET l_canEdit = FALSE
+			LET l_canEdit  = FALSE
 	END CASE
 
 	IF l_typ.subString(1, 8) = "FUNCTION" THEN
-		LET l_len      = l_typ.getLength()
-		LET l_func     = TRUE
+		LET l_len  = l_typ.getLength()
+		LET l_func = TRUE
 	END IF
 	IF l_typ.subString(1, 4) = "CHAR" OR l_typ.subString(1, 7) = "VARCHAR" OR l_typ.subString(1, 6) = "STRING" THEN
 		LET l_numalign = FALSE
@@ -180,7 +177,7 @@ PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN, BO
 		LET l_canEdit  = TRUE
 	END IF
 
--- handle length from bracketed size, except for DATETIME and INTERVAL 
+-- handle length from bracketed size, except for DATETIME and INTERVAL
 	IF l_typ.subString(1, 8) != "DATETIME" AND l_typ.subString(1, 8) != "INTERVAL" THEN
 		LET z = l_typ.getIndexOf("(", 1)
 		IF z > 0 THEN

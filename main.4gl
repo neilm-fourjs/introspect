@@ -5,10 +5,10 @@ IMPORT FGL introspect.*
 &include "debug_dump.inc"
 
 TYPE t_rec RECORD
-	my_key   INTEGER ATTRIBUTE(json_name = "key"),
-	a_string STRING,
-	created  DATETIME YEAR TO SECOND,
-	cost     DECIMAL(10, 2)
+	my_key   INTEGER ATTRIBUTE(json_name = "Key"),
+	a_string STRING ATTRIBUTE(json_name = "String"),
+	created  DATETIME YEAR TO SECOND ATTRIBUTE(json_name = "Created"),
+	cost     DECIMAL(10, 2) ATTRIBUTE(json_name = "Cost")
 END RECORD
 
 MAIN
@@ -29,12 +29,10 @@ MAIN
 	CALL fgl_settitle("Reflection Demo")
 	MENU
 		ON ACTION dumprRec ATTRIBUTES(TEXT = "Dump Rec")
-			CALL l_r.init("l_rec", reflect.Value.valueOf(l_rec))
-			CALL l_r.dump()
+			DEBUG_DUMP("l_rec", l_rec)
 
 		ON ACTION dumprArr ATTRIBUTES(TEXT = "Dump Arr")
-			CALL l_r.init("l_arr", reflect.Value.valueOf(l_arr))
-			CALL l_r.dump()
+			DEBUG_DUMP("l_arr", l_arr)
 
 		ON ACTION uirRec ATTRIBUTES(TEXT = "UI Rec")
 			CALL l_r.init("l_rec", reflect.Value.valueOf(l_rec))
@@ -43,9 +41,6 @@ MAIN
 		ON ACTION uirArr ATTRIBUTES(TEXT = "UI Arr")
 			CALL l_r.init("l_arr", reflect.Value.valueOf(l_arr))
 			CALL l_dUI.show(l_titl: NULL, l_rObj: l_r, l_wait: TRUE)
-
-		ON ACTION debug ATTRIBUTES(TEXT = "Debug Dump")
-			DEBUG_DUMP("l_rec", l_rec)
 
 		ON ACTION quit ATTRIBUTES(TEXT = "Quit")
 			EXIT MENU
