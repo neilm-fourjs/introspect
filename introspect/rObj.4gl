@@ -32,24 +32,24 @@ END RECORD
 FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 	DEFINE x, z SMALLINT
 	INITIALIZE this TO NULL
+	VAR l_rt reflect.Type = l_rv.getType()
 	LET this.reflectV  = l_rv
 	LET this.name      = l_nam
-	LET this.kind      = l_rv.getType().getKind()
-	LET this.type      = l_rv.getType().toString()
-	LET this.json_name = l_rv.getType().getAttribute("json_name")
+	LET this.kind      = l_rt.getKind()
+	LET this.type      = l_rt.toString()
+	LET this.json_name = l_rt.getAttribute("json_name")
 
 	IF this.kind = "RECORD" THEN
-		VAR l_et reflect.Type = l_rv.getType()
-		FOR x = 1 TO l_rv.getType().getFieldCount() -- Loop thru fields
-			LET this.flds[x].name      = l_et.getFieldName(x)
-			LET this.flds[x].json_name = l_et.getFieldType(x).getAttribute("json_name")
-			LET this.flds[x].type      = l_et.getFieldType(x).toString()
+		FOR x = 1 TO l_rt.getFieldCount() -- Loop thru fields
+			LET this.flds[x].name      = l_rt.getFieldName(x)
+			LET this.flds[x].json_name = l_rt.getFieldType(x).getAttribute("json_name")
+			LET this.flds[x].type      = l_rt.getFieldType(x).toString()
 			CALL getTypeLen(this.flds[x].type)
 					RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func, this.flds[x].canEdit
 			LET this.flds[x].values[1] = l_rv.getField(x).toString()
 			LET this.rec_count         = 1
 		END FOR
-		FOR x = 1 TO l_rv.getType().getMethodCount() -- Loop thru methods
+		FOR x = 1 TO l_rt.getMethodCount() -- Loop thru methods
 			VAR l_em reflect.Method = l_rv.getType().getMethod(x)
 			LET this.methods[x].name      = l_em.getName()
 			LET this.methods[x].signature = l_em.getSignature()
@@ -63,15 +63,15 @@ FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 	END IF
 	IF this.kind = "ARRAY" THEN
 		LET this.rec_count = l_rv.getLength()
+		VAR l_rv2 reflect.Value
 		FOR z = 1 TO this.rec_count -- loop thru array items
-			VAR l_rv2 reflect.Value
 			LET l_rv2 = l_rv.getArrayElement(z)
-			VAR l_et reflect.Type = l_rv2.getType()
-			FOR x = 1 TO l_rv2.getType().getFieldCount() -- loop thru fields
+			VAR l_rt2 reflect.Type = l_rv2.getType()
+			FOR x = 1 TO l_rt2.getFieldCount() -- loop thru fields
 				IF z = 1 THEN
-					LET this.flds[x].name = l_et.getFieldName(x)
-					LET this.flds[x].json_name = l_et.getFieldType(x).getAttribute("json_name")
-					LET this.flds[x].type = l_et.getFieldType(x).toString()
+					LET this.flds[x].name      = l_rt2.getFieldName(x)
+					LET this.flds[x].json_name = l_rt2.getFieldType(x).getAttribute("json_name")
+					LET this.flds[x].type      = l_rt2.getFieldType(x).toString()
 					CALL getTypeLen(this.flds[x].type)
 							RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func, this.flds[x].canEdit
 				END IF

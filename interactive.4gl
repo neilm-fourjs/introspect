@@ -29,8 +29,7 @@ MAIN
 	CALL fgl_settitle("Reflection Interactive Demo")
 	MENU
 		ON ACTION dumprRec ATTRIBUTES(TEXT = "Dump Rec")
-			CALL l_r.init("l_rec", reflect.Value.valueOf(l_rec))
-			CALL l_r.dump()
+			DEBUG_DUMP("l_rec", l_rec)
 
 		ON ACTION uirRec ATTRIBUTES(TEXT = "UI Rec")
 			DISPLAY SFMT("A String Before: %1", l_rec.a_string)
@@ -53,9 +52,6 @@ MAIN
 				DISPLAY "Cancelled"
 			END IF
 			CALL l_dUI.closeWindow()
-
-		ON ACTION debug ATTRIBUTES(TEXT = "Debug Dump")
-			DEBUG_DUMP("l_rec", l_rec)
 
 		ON ACTION quit ATTRIBUTES(TEXT = "Quit")
 			EXIT MENU

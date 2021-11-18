@@ -1,5 +1,4 @@
 IMPORT reflect
-IMPORT FGL fgldialog
 IMPORT FGL introspect.*
 
 &include "debug_dump.inc"

@@ -13,4 +13,5 @@ MAIN
 	CALL l_r_arr.init("l_cst", reflect.Value.valueOf(l_cst))
 	CALL l_dUI.show("Customers", l_r_arr, l_wait: FALSE)
 	LET x = l_dUI.displayArray(l_tabn: "tablistv", l_interactive: TRUE)
+	DISPLAY IIF(x>0, SFMT("Row %1 Selected", x), "Cancelled")
 END MAIN
