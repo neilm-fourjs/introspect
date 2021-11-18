@@ -50,14 +50,14 @@ FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 			LET this.rec_count         = 1
 		END FOR
 		FOR x = 1 TO l_rt.getMethodCount() -- Loop thru methods
-			VAR l_em reflect.Method = l_rv.getType().getMethod(x)
-			LET this.methods[x].name      = l_em.getName()
-			LET this.methods[x].signature = l_em.getSignature()
-			FOR z = 1 TO l_em.getParameterCount() -- Loop thru Input Parameters
-				LET this.methods[x].params[z] = l_em.getParameterType(z).toString()
+			VAR l_rm reflect.Method = l_rv.getType().getMethod(x)
+			LET this.methods[x].name      = l_rm.getName()
+			LET this.methods[x].signature = l_rm.getSignature()
+			FOR z = 1 TO l_rm.getParameterCount() -- Loop thru Input Parameters
+				LET this.methods[x].params[z] = l_rm.getParameterType(z).toString()
 			END FOR
-			FOR z = 1 TO l_em.getReturnCount() -- Loop thru Output Parameters
-				LET this.methods[x].returns[z] = l_em.getReturnType(z).toString()
+			FOR z = 1 TO l_rm.getReturnCount() -- Loop thru Output Parameters
+				LET this.methods[x].returns[z] = l_rm.getReturnType(z).toString()
 			END FOR
 		END FOR
 	END IF
