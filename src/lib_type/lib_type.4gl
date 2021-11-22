@@ -6,6 +6,10 @@ PUBLIC TYPE obj RECORD
 	name       STRING,
 	type       STRING,
 	value      t_str,
+	list       DYNAMIC ARRAY OF RECORD
+		key      INT,
+		value    STRING
+	END RECORD,
 	validate   t_val_func,
 	state      SMALLINT,
 	last_error STRING
@@ -29,6 +33,7 @@ FUNCTION (this obj) init(l_nam STRING, l_typ STRING, l_val STRING, l_val_func t_
 	END IF
 	LET this.validate = l_val_func
 	LET this.state    = 1
+	CALL this.list.clear()
 	RETURN TRUE
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------

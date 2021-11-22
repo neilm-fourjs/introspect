@@ -21,7 +21,12 @@ MAIN
 
 	CALL l_r_rec.init("m_myObj", reflect.Value.valueOf(m_myObj))
 	CALL l_r_rec.dump()
-	CALL l_dUI.show("Custom Object with Methods", l_r_rec, l_wait: TRUE )
+	CALL l_dUI.show("Custom Object with Methods", l_r_rec, l_wait: TRUE)
+
+-- Inception :)
+{	CALL l_r_rec.init("l_r_rec", reflect.Value.valueOf(l_r_rec))
+	CALL l_r_rec.dump()
+	CALL l_dUI.show("Custom Object with Methods", l_r_rec, l_wait: TRUE)}
 
 	DISPLAY "Program Finished."
 
@@ -36,8 +41,12 @@ FUNCTION chkString(l_val STRING) RETURNS STRING
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 FUNCTION testIt()
+	DEFINE x SMALLINT
 	DISPLAY IIF(m_myObj.isEmpty(), "Obj is empty", "Obj is NOT empty")
-
+	FOR x = 1 TO 5
+		LET m_myObj.list[x].key   = x
+		LET m_myObj.list[x].value = "Test " || x
+	END FOR
 	IF NOT m_myObj.setValue("Testing") THEN
 		DISPLAY "Failed to setValue: ", m_myObj.last_error
 	END IF
@@ -47,5 +56,4 @@ FUNCTION testIt()
 	ELSE
 		DISPLAY "Value set okay."
 	END IF
-
 END FUNCTION

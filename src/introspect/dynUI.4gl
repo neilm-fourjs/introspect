@@ -63,9 +63,10 @@ END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 -- Add the record items to the form and do a simple menu.
 FUNCTION (this dUI) showRecord(l_n om.DomNode)
-	DEFINE x, y     SMALLINT
+	DEFINE x, y, z  SMALLINT
 	DEFINE l_lab    om.DomNode
 	DEFINE l_ff     om.DomNode
+	DEFINE l_gp     om.DomNode
 	DEFINE l_method STRING
 	LET y = 1
 	FOR x = 1 TO this.rObj.flds.getLength()
@@ -81,25 +82,41 @@ FUNCTION (this dUI) showRecord(l_n om.DomNode)
 		CALL l_lab.setAttribute("justify", "right")
 		CALL l_lab.setAttribute("style", "bold darkblue")
 
-		LET l_ff = l_n.createChild("FormField")
-		CALL l_ff.setAttribute("colName", this.rObj.flds[x].name)
-		CALL l_ff.setAttribute("name", "formonly." || this.rObj.flds[x].name)
-		CALL l_ff.setAttribute("numAlign", this.rObj.flds[x].num)
-		CALL l_ff.setAttribute("varType", this.rObj.flds[x].type)
-		IF this.rObj.flds[x].canEdit THEN
-			CALL l_ff.setAttribute("value", this.rObj.flds[x].values[1])
-			LET l_ff = l_ff.createChild("Edit")
+		IF this.rObj.flds[x].type = "DYNAMIC ARRAY OF RECORD" THEN
+			LET l_gp = l_n.createChild("Group")
+			CALL l_gp.setAttribute("text", this.rObj.flds[x].name)
+			CALL l_gp.setAttribute("posY", y)
+			CALL l_gp.setAttribute("posX", 20)
+			CALL l_gp.setAttribute("gridWidth",120)
+			LET y += 5
+			VAR l_tmp_rObj rObj
+			VAR l_tmp_dynUI dUI
+			CALL l_tmp_rObj.init(this.rObj.flds[x].name, this.rObj.flds[x].rValue)
+			CALL l_tmp_rObj.dump()
+			LET l_tmp_dynUI.rObj = l_tmp_rObj
+			CALL l_tmp_dynUI.showArray(l_tabn: this.rObj.flds[x].name, l_gp)
+			LET z = l_tmp_dynUI.displayArray(l_tabn: this.rObj.flds[x].name, l_interactive: FALSE, l_row: 1) -- display the array but exit.
 		ELSE
-			CALL l_ff.setAttribute("value", this.rObj.flds[x].type)
-			LET l_ff = l_ff.createChild("Label")
+			LET l_ff = l_n.createChild("FormField")
+			CALL l_ff.setAttribute("colName", this.rObj.flds[x].name)
+			CALL l_ff.setAttribute("name", "formonly." || this.rObj.flds[x].name)
+			CALL l_ff.setAttribute("numAlign", this.rObj.flds[x].num)
+			CALL l_ff.setAttribute("varType", this.rObj.flds[x].type)
+			IF this.rObj.flds[x].canEdit THEN
+				CALL l_ff.setAttribute("value", this.rObj.flds[x].values[1])
+				LET l_ff = l_ff.createChild("Edit")
+			ELSE
+				CALL l_ff.setAttribute("value", this.rObj.flds[x].type)
+				LET l_ff = l_ff.createChild("Label")
+			END IF
+			CALL l_ff.setAttribute("name", this.rObj.flds[x].name)
+			CALL l_ff.setAttribute("posY", y)
+			CALL l_ff.setAttribute("posX", 20)
+			CALL l_ff.setAttribute("width", this.rObj.flds[x].len)
+			CALL l_ff.setAttribute("gridWidth", this.rObj.flds[x].len)
+			CALL l_ff.setAttribute("comment", this.rObj.flds[x].type)
+			LET y += 1
 		END IF
-		CALL l_ff.setAttribute("name", this.rObj.flds[x].name)
-		CALL l_ff.setAttribute("posY", y)
-		CALL l_ff.setAttribute("posX", 20)
-		CALL l_ff.setAttribute("width", this.rObj.flds[x].len)
-		CALL l_ff.setAttribute("gridWidth", this.rObj.flds[x].len)
-		CALL l_ff.setAttribute("comment", this.rObj.flds[x].type)
-		LET y += 1
 	END FOR
 	IF this.rObj.methods.getLength() > 0 THEN
 		LET l_lab = l_n.createChild("Label")
@@ -146,8 +163,9 @@ FUNCTION (this dUI) showArray(l_tabn STRING, l_n om.DomNode)
 		typ STRING
 	END RECORD
 	DEFINE l_tabl, l_tc om.DomNode
-	DEFINE x            SMALLINT
+	DEFINE x, z           SMALLINT
 
+	DISPLAY SFMT("Create Table name of '%1'", l_tabn)
 	LET l_tabl = l_n.createChild("Table")
 	CALL l_tabl.setAttribute("tabName", l_tabn)
 	CALL l_tabl.setAttribute("width", 100)
@@ -157,21 +175,25 @@ FUNCTION (this dUI) showArray(l_tabn STRING, l_n om.DomNode)
 	CALL l_tabl.setAttribute("posY", "1")
 
 	-- add the columns to the table build our 'fields' list.
+	LET z = 1
 	FOR x = 1 TO this.rObj.flds.getLength()
-		LET l_fields[x].nam = this.rObj.flds[x].name
-		LET l_fields[x].typ = this.rObj.flds[x].type
-		LET l_tc            = l_tabl.createChild("TableColumn")
-		IF this.rObj.flds[x].json_name IS NOT NULL THEN
-			CALL l_tc.setAttribute("text", this.rObj.flds[x].json_name)
-		ELSE
-			CALL l_tc.setAttribute("text", prettyName(this.rObj.flds[x].name))
+		IF this.rObj.flds[x].canEdit THEN
+			LET l_fields[z].nam = this.rObj.flds[x].name.toLowerCase()
+			LET l_fields[z].typ = this.rObj.flds[x].type
+			LET l_tc            = l_tabl.createChild("TableColumn")
+			IF this.rObj.flds[x].json_name IS NOT NULL THEN
+				CALL l_tc.setAttribute("text", this.rObj.flds[x].json_name)
+			ELSE
+				CALL l_tc.setAttribute("text", prettyName(this.rObj.flds[x].name))
+			END IF
+			CALL l_tc.setAttribute("colName", this.rObj.flds[x].name.toLowerCase())
+			CALL l_tc.setAttribute("name", "formonly." || this.rObj.flds[x].name)
+			CALL l_tc.setAttribute("varType", this.rObj.flds[x].type)
+			CALL l_tc.setAttribute("numAlign", this.rObj.flds[x].num)
+			LET l_tc = l_tc.createChild("Edit")
+			CALL l_tc.setAttribute("width", this.rObj.flds[x].len)
+			LET z += 1
 		END IF
-		CALL l_tc.setAttribute("colName", this.rObj.flds[x].name)
-		CALL l_tc.setAttribute("name", "formonly." || this.rObj.flds[x].name)
-		CALL l_tc.setAttribute("varType", this.rObj.flds[x].type)
-		CALL l_tc.setAttribute("numAlign", this.rObj.flds[x].num)
-		LET l_tc = l_tc.createChild("Edit")
-		CALL l_tc.setAttribute("width", this.rObj.flds[x].len)
 	END FOR
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
@@ -184,16 +206,23 @@ FUNCTION (this dUI) displayArray(l_tabn STRING, l_interactive BOOLEAN, l_row INT
 	END RECORD
 	DEFINE l_event STRING
 	DEFINE x, z    SMALLINT
+	LET z = 1
 	FOR x = 1 TO this.rObj.flds.getLength()
-		LET l_fields[x].nam = this.rObj.flds[x].name
-		LET l_fields[x].typ = this.rObj.flds[x].type
+		IF this.rObj.flds[x].canEdit THEN
+			LET l_fields[z].nam = this.rObj.flds[x].name.toLowerCase()
+			LET l_fields[z].typ = this.rObj.flds[x].type
+			LET z += 1
+		END IF
 	END FOR
 	-- create a dialog object and populate it.
 	LET l_d = ui.Dialog.createDisplayArrayTo(l_fields, l_tabn)
+	DISPLAY SFMT("Name: %1 Values: %2", this.rObj.flds[1].name, this.rObj.flds[1].values.getLength())
 	FOR z = 1 TO this.rObj.flds[1].values.getLength() -- loop through array items
 		CALL l_d.setCurrentRow(l_tabn, z)
 		FOR x = 1 TO this.rObj.flds.getLength() -- loop though fields in the record
-			CALL l_d.setFieldValue(l_fields[x].nam, this.rObj.flds[x].values[z])
+			IF this.rObj.flds[x].canEdit THEN
+				CALL l_d.setFieldValue(this.rObj.flds[x].name.toLowerCase(), this.rObj.flds[x].values[z])
+			END IF
 		END FOR
 	END FOR
 	CALL l_d.setCurrentRow(l_tabn, l_row) -- change the current row.

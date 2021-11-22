@@ -16,7 +16,8 @@ PUBLIC TYPE rObj RECORD
 		num       BOOLEAN,
 		func      BOOLEAN,
 		canEdit   BOOLEAN,
-		values    DYNAMIC ARRAY OF STRING
+		values    DYNAMIC ARRAY OF STRING,
+		rValue    reflect.Value
 	END RECORD,
 	methods DYNAMIC ARRAY OF RECORD
 		name      STRING,
@@ -47,6 +48,7 @@ FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
 			CALL getTypeLen(this.flds[x].type)
 					RETURNING this.flds[x].len, this.flds[x].num, this.flds[x].func, this.flds[x].canEdit
 			LET this.flds[x].values[1] = l_rv.getField(x).toString()
+			LET this.flds[x].rValue    = l_rv.getField(x)
 			LET this.rec_count         = 1
 		END FOR
 		FOR x = 1 TO l_rt.getMethodCount() -- Loop thru methods
@@ -153,6 +155,8 @@ PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN, BO
 			LET l_len = 50
 		WHEN "DATE"
 			LET l_len = 10
+		WHEN "BOOLEAN"
+			LET l_len = 1
 		WHEN "DATETIME YEAR TO FRACTION(5)"
 			LET l_len = 26
 		WHEN "DATETIME YEAR TO SECOND"
