@@ -168,8 +168,8 @@ FUNCTION (this dUI) showArray(l_tabn STRING, l_n om.DomNode)
 	CALL l_tabl.setAttribute("tabName", l_tabn)
 	CALL l_tabl.setAttribute("width", 100)
 	CALL l_tabl.setAttribute("gridWidth", 100)
-	CALL l_tabl.setAttribute("height", "10")
-	CALL l_tabl.setAttribute("pageSize", "10")
+	CALL l_tabl.setAttribute("height", "15")
+	CALL l_tabl.setAttribute("pageSize", "15")
 	CALL l_tabl.setAttribute("posY", "1")
 
 	-- add the columns to the table build our 'fields' list.

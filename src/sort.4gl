@@ -31,6 +31,7 @@ MAIN
 		LET l_arr[i].idx = i
 		LET l_arr[i].x   = util.Math.rand(10)
 		LET l_arr[i].y   = util.Math.rand(10)
+		DISPLAY SFMT("%1) idx: %2 name: %3",i, l_arr[i].idx, l_arr[i].name)
 	END FOR
 	CALL fgl_settitle("Sort Demo")
 	MENU
@@ -38,7 +39,7 @@ MAIN
 			DISPLAY "*** iTunes Sort ignoring 'The '"
 			CALL custom_sort(reflect.Value.valueOf(l_arr), FUNCTION itunes_sort, "name")
 			FOR i = 1 TO l_arr.getLength()
-				DISPLAY l_arr[i].idx, ":", l_arr[i].name
+				DISPLAY SFMT("%1) idx: %2 name: %3",i, l_arr[i].idx, l_arr[i].name)
 			END FOR
 			CALL l_r_arr.init("l_arr", reflect.Value.valueOf(l_arr))
 			CALL l_dUI.show("iTunes Sort", l_r_arr, l_wait: TRUE)
