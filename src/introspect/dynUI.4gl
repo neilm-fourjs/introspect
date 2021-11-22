@@ -84,15 +84,14 @@ FUNCTION (this dUI) showRecord(l_n om.DomNode)
 
 		IF this.rObj.flds[x].type = "DYNAMIC ARRAY OF RECORD" THEN
 			LET l_gp = l_n.createChild("Group")
-			CALL l_gp.setAttribute("text", this.rObj.flds[x].name)
 			CALL l_gp.setAttribute("posY", y)
 			CALL l_gp.setAttribute("posX", 20)
 			CALL l_gp.setAttribute("gridWidth",120)
+			CALL l_gp.setAttribute("gridHeight",5)
 			LET y += 5
 			VAR l_tmp_rObj rObj
 			VAR l_tmp_dynUI dUI
 			CALL l_tmp_rObj.init(this.rObj.flds[x].name, this.rObj.flds[x].rValue)
-			CALL l_tmp_rObj.dump()
 			LET l_tmp_dynUI.rObj = l_tmp_rObj
 			CALL l_tmp_dynUI.showArray(l_tabn: this.rObj.flds[x].name, l_gp)
 			LET z = l_tmp_dynUI.displayArray(l_tabn: this.rObj.flds[x].name, l_interactive: FALSE, l_row: 1) -- display the array but exit.
@@ -165,13 +164,12 @@ FUNCTION (this dUI) showArray(l_tabn STRING, l_n om.DomNode)
 	DEFINE l_tabl, l_tc om.DomNode
 	DEFINE x, z           SMALLINT
 
-	DISPLAY SFMT("Create Table name of '%1'", l_tabn)
 	LET l_tabl = l_n.createChild("Table")
 	CALL l_tabl.setAttribute("tabName", l_tabn)
 	CALL l_tabl.setAttribute("width", 100)
 	CALL l_tabl.setAttribute("gridWidth", 100)
-	CALL l_tabl.setAttribute("height", "20")
-	CALL l_tabl.setAttribute("pageSize", "20")
+	CALL l_tabl.setAttribute("height", "10")
+	CALL l_tabl.setAttribute("pageSize", "10")
 	CALL l_tabl.setAttribute("posY", "1")
 
 	-- add the columns to the table build our 'fields' list.
@@ -216,7 +214,6 @@ FUNCTION (this dUI) displayArray(l_tabn STRING, l_interactive BOOLEAN, l_row INT
 	END FOR
 	-- create a dialog object and populate it.
 	LET l_d = ui.Dialog.createDisplayArrayTo(l_fields, l_tabn)
-	DISPLAY SFMT("Name: %1 Values: %2", this.rObj.flds[1].name, this.rObj.flds[1].values.getLength())
 	FOR z = 1 TO this.rObj.flds[1].values.getLength() -- loop through array items
 		CALL l_d.setCurrentRow(l_tabn, z)
 		FOR x = 1 TO this.rObj.flds.getLength() -- loop though fields in the record

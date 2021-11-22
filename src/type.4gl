@@ -24,12 +24,11 @@ MAIN
 	CALL l_dUI.show("Custom Object with Methods", l_r_rec, l_wait: TRUE)
 
 -- Inception :)
-{	CALL l_r_rec.init("l_r_rec", reflect.Value.valueOf(l_r_rec))
+	{CALL l_r_rec.init("l_r_rec", reflect.Value.valueOf(l_r_rec))
 	CALL l_r_rec.dump()
 	CALL l_dUI.show("Custom Object with Methods", l_r_rec, l_wait: TRUE)}
 
 	DISPLAY "Program Finished."
-
 END MAIN
 --------------------------------------------------------------------------------------------------------------
 FUNCTION chkString(l_val STRING) RETURNS STRING
