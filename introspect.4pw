@@ -68,53 +68,56 @@
   <LanguageList version="1.0"/>
   <PlatformList version="1.0"/>
   <Group id="-1163660050" label="__Library" language="Genero (no link)">
+    <Library binaryName="etc" id="-1938873870" label="etc">
+      <File filePath="etc/default.4st"/>
+    </Library>
     <Library binaryName="introspect" dependencies="1986" id="14000" label="introspect">
-      <File filePath="introspect/custom_sort.4gl"/>
-      <File filePath="introspect/debug_dump.inc"/>
-      <File filePath="introspect/dynUI.4gl"/>
-      <File filePath="introspect/prettyName.4gl"/>
-      <File filePath="introspect/rObj.4gl"/>
-      <File filePath="introspect/sql2array.4gl"/>
+      <File filePath="src/introspect/custom_sort.4gl"/>
+      <File filePath="src/introspect/debug_dump.inc"/>
+      <File filePath="src/introspect/dynUI.4gl"/>
+      <File filePath="src/introspect/prettyName.4gl"/>
+      <File filePath="src/introspect/rObj.4gl"/>
+      <File filePath="src/introspect/sql2array.4gl"/>
     </Library>
   </Group>
   <Group id="1388735151" label="Demo1 Simple Record" language="Genero (no link)">
     <Application binaryName="rec" id="-1034729039" label="rec">
       <Configuration environment="value:FGLGUI=0" id="1326750722" label="rec"/>
-      <File filePath="rec.4gl"/>
+      <File filePath="src/rec.4gl"/>
     </Application>
   </Group>
   <Group id="1919482141" label="Demo2 SQL 2 Array" language="Genero (no link)">
     <Application binaryName="sql2arr" dependencies="14000" id="380851367" label="sql2arr">
       <Configuration binaryName="sql2arr" id="957178861" label="sql2arr"/>
-      <File filePath="sql2arr.4gl"/>
+      <File filePath="src/sql2arr.4gl"/>
     </Application>
   </Group>
   <Group id="75644415" label="Demo3 Library Examples" language="Genero (no link)">
     <Application binaryName="LibDemos" dependencies="14000" id="-1675106384" label="LibDemos">
       <VirtualFolder label="DB">
-        <File filePath="njm_demo310.4db"/>
+        <File filePath="etc/njm_demo310.4db"/>
       </VirtualFolder>
       <Configuration binaryName="interactive" id="-1077291310" label="Interactive"/>
       <Configuration binaryName="main" id="-1429969501" label="main"/>
       <Configuration binaryName="sql2arr_cust" id="1056839780" label="sql2arr_cust"/>
-      <File filePath="interactive.4gl"/>
-      <File filePath="main.4gl"/>
-      <File filePath="sql2arr_cust.4gl"/>
+      <File filePath="src/interactive.4gl"/>
+      <File filePath="src/main.4gl"/>
+      <File filePath="src/sql2arr_cust.4gl"/>
     </Application>
   </Group>
   <Group id="-1193601956" label="Demo4 Type" language="Genero (no link)">
     <Library binaryName="lib_type" id="1309714501" label="lib_type">
-      <File filePath="lib_type/lib_type.4gl"/>
+      <File filePath="src/lib_type/lib_type.4gl"/>
     </Library>
     <Application binaryName="type" dependencies="1309714501,14000" id="-1841598400" label="type">
       <Configuration binaryName="type" id="-1261230128" label="type"/>
-      <File filePath="type.4gl"/>
+      <File filePath="src/type.4gl"/>
     </Application>
   </Group>
   <Group id="-329125570" label="Demo5 Sort" language="Genero (no link)">
     <Application binaryName="Sort" id="-275868561" label="Sort">
       <Configuration binaryName="sort" id="-1941066233" label="sort"/>
-      <File filePath="sort.4gl"/>
+      <File filePath="src/sort.4gl"/>
     </Application>
   </Group>
 </Project>

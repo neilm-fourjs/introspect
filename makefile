@@ -1,5 +1,5 @@
 
-export FGLRESOURCEPATH=$(PWD)
+export FGLRESOURCEPATH=$(PWD)/etc
 
 all:
 	gsmake introspect.4pw
