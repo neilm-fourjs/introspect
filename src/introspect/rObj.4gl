@@ -143,6 +143,8 @@ PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN, BO
 	CASE l_typ
 		WHEN "SMALLINT"
 			LET l_len = 5
+		WHEN "SERIAL"
+			LET l_len = 10
 		WHEN "INTEGER"
 			LET l_len = 10
 		WHEN "FLOAT"
@@ -176,9 +178,8 @@ PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN, BO
 		LET l_numalign = TRUE
 		LET l_canEdit  = TRUE
 	END IF
-
 -- handle length from bracketed size, except for DATETIME and INTERVAL
-	IF l_typ.subString(1, 8) != "DATETIME" AND l_typ.subString(1, 8) != "INTERVAL" THEN
+	IF l_typ NOT MATCHES "DATETIME*" AND l_typ NOT MATCHES "INTERVAL*" THEN
 		LET z = l_typ.getIndexOf("(", 1)
 		IF z > 0 THEN
 			LET y = l_typ.getIndexOf(",", z)
@@ -187,6 +188,8 @@ PRIVATE FUNCTION getTypeLen(l_typ STRING) RETURNS(SMALLINT, BOOLEAN, BOOLEAN, BO
 			END IF
 			LET l_len = l_typ.subString(z + 1, y - 1)
 		END IF
+	ELSE
+		DISPLAY "Must be DATETIME or INTERVAL"
 	END IF
 
 	--DISPLAY SFMT("Type: %1 Len: %2 Num: %3 Func: %4", l_typ, l_len, l_numalign, l_func)
