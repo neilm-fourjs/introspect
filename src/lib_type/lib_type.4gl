@@ -3,12 +3,12 @@ PACKAGE lib_type
 PRIVATE TYPE t_val_func FUNCTION(l_val STRING) RETURNS STRING
 PRIVATE TYPE t_str STRING
 PUBLIC TYPE obj RECORD
-	name       STRING,
-	type       STRING,
-	value      t_str,
-	list       DYNAMIC ARRAY OF RECORD
-		key      INT,
-		value    STRING
+	name  STRING,
+	type  STRING,
+	value t_str,
+	list DYNAMIC ARRAY OF RECORD
+		key   INT,
+		value STRING
 	END RECORD,
 	validate   t_val_func,
 	state      SMALLINT,
