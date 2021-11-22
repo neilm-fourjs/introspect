@@ -10,6 +10,9 @@ Property of Four Js*
 -->
 
 <StyleList>
+  <Style name=".darkblue">
+     <StyleAttribute name="textColor" value="darkblue" />
+  </Style>
   <Style name=".bold">
      <StyleAttribute name="fontWeight" value="bold" />
   </Style>

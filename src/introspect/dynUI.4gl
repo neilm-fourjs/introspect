@@ -79,7 +79,7 @@ FUNCTION (this dUI) showRecord(l_n om.DomNode)
 		CALL l_lab.setAttribute("posX", 1)
 		CALL l_lab.setAttribute("gridWidth", 18)
 		CALL l_lab.setAttribute("justify", "right")
-		CALL l_lab.setAttribute("style", "bold")
+		CALL l_lab.setAttribute("style", "bold darkblue")
 
 		LET l_ff = l_n.createChild("FormField")
 		CALL l_ff.setAttribute("colName", this.rObj.flds[x].name)

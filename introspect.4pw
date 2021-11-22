@@ -93,7 +93,7 @@
     </Application>
   </Group>
   <Group id="75644415" label="Demo3 Library Examples" language="Genero (no link)">
-    <Application binaryName="LibDemos" dependencies="14000" id="-1675106384" label="LibDemos">
+    <Application binaryName="LibDemos" dependencies="14000,-1938873870" id="-1675106384" label="LibDemos">
       <VirtualFolder label="DB">
         <File filePath="etc/njm_demo310.4db"/>
       </VirtualFolder>
@@ -109,7 +109,7 @@
     <Library binaryName="lib_type" id="1309714501" label="lib_type">
       <File filePath="src/lib_type/lib_type.4gl"/>
     </Library>
-    <Application binaryName="type" dependencies="1309714501,14000" id="-1841598400" label="type">
+    <Application binaryName="type" dependencies="1309714501,14000,-1938873870" id="-1841598400" label="type">
       <Configuration binaryName="type" id="-1261230128" label="type"/>
       <File filePath="src/type.4gl"/>
     </Application>
