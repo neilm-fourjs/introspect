@@ -97,12 +97,10 @@
       <VirtualFolder label="DB">
         <File filePath="etc/njm_demo310.4db"/>
       </VirtualFolder>
-      <Configuration binaryName="interactive" id="-1077291310" label="Interactive"/>
       <Configuration binaryName="main" id="-1429969501" label="main"/>
-      <Configuration binaryName="sql2arr_cust" id="1056839780" label="sql2arr_cust"/>
+      <Configuration binaryName="interactive" id="-1077291310" label="SQL2Arr Interactive"/>
       <File filePath="src/interactive.4gl"/>
       <File filePath="src/main.4gl"/>
-      <File filePath="src/sql2arr_cust.4gl"/>
     </Application>
   </Group>
   <Group id="-1193601956" label="Demo4 Type" language="Genero (no link)">

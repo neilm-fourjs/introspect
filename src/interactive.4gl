@@ -15,7 +15,7 @@ MAIN
 	WHILE x > 0
 		CALL l_r_arr.init("l_cst", reflect.Value.valueOf(l_arr))            -- prepare array object
 		CALL l_dUI.show("Customers", l_r_arr, l_wait: FALSE)                -- build ui
-		LET x = l_dUI.displayArray(l_tabn: "tablistv", l_interactive: TRUE) -- do dispaly array
+		LET x = l_dUI.displayArray(l_tabn: "tablistv", l_interactive: TRUE, l_row: x) -- do dispaly array ( keeping current row )
 		IF x > 0 THEN                                                       -- a row was selected.
 			CALL l_dUI.closeWindow()                                          -- close the array window
 			LET l_cst = l_arr[x]                                              -- get the selected row

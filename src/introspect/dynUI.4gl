@@ -40,7 +40,7 @@ FUNCTION (this dUI) show(l_titl STRING, l_rObj rObj, l_wait BOOLEAN)
 		END IF
 		IF this.rObj.kind = "ARRAY" THEN
 			CALL this.showArray("tablistv", l_n)
-			LET x = this.displayArray("tablistv", FALSE) -- display the array but exit.
+			LET x = this.displayArray("tablistv", FALSE, 1) -- display the array but exit.
 		END IF
 	END IF
 	IF l_wait THEN
@@ -176,7 +176,7 @@ FUNCTION (this dUI) showArray(l_tabn STRING, l_n om.DomNode)
 END FUNCTION
 --------------------------------------------------------------------------------------------------------------
 -- create a table
-FUNCTION (this dUI) displayArray(l_tabn STRING, l_interactive BOOLEAN) RETURNS INT
+FUNCTION (this dUI) displayArray(l_tabn STRING, l_interactive BOOLEAN, l_row INT) RETURNS INT
 	DEFINE l_d ui.Dialog
 	DEFINE l_fields DYNAMIC ARRAY OF RECORD
 		nam STRING,
@@ -196,7 +196,7 @@ FUNCTION (this dUI) displayArray(l_tabn STRING, l_interactive BOOLEAN) RETURNS I
 			CALL l_d.setFieldValue(l_fields[x].nam, this.rObj.flds[x].values[z])
 		END FOR
 	END FOR
-	CALL l_d.setCurrentRow(l_tabn, 1) -- force the first row to be the current row.
+	CALL l_d.setCurrentRow(l_tabn, l_row) -- change the current row.
 
 	-- add our default actions to the dialog
 	CALL l_d.addTrigger("ON ACTION close")
