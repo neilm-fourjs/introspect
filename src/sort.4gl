@@ -31,33 +31,33 @@ MAIN
 		LET l_arr[i].idx = i
 		LET l_arr[i].x   = util.Math.rand(10)
 		LET l_arr[i].y   = util.Math.rand(10)
-		DISPLAY SFMT("%1) idx: %2 name: %3",i, l_arr[i].idx, l_arr[i].name)
+		DISPLAY SFMT("%1) idx: %2 name: %3", (i USING "#&"), (l_arr[i].idx USING "#&"), l_arr[i].name)
 	END FOR
 	CALL fgl_settitle("Sort Demo")
 	MENU
 		COMMAND "iTunes Sort ignoring 'The '"
-			DISPLAY "*** iTunes Sort ignoring 'The '"
 			CALL custom_sort(reflect.Value.valueOf(l_arr), FUNCTION itunes_sort, "name")
+			DISPLAY "*** iTunes Sort ignoring 'The '"
 			FOR i = 1 TO l_arr.getLength()
-				DISPLAY SFMT("%1) idx: %2 name: %3",i, l_arr[i].idx, l_arr[i].name)
+				DISPLAY SFMT("%1) idx: %2 name: %3", (i USING "#&"), (l_arr[i].idx USING "#&"), l_arr[i].name)
 			END FOR
 			CALL l_r_arr.init("l_arr", reflect.Value.valueOf(l_arr))
 			CALL l_dUI.show("iTunes Sort", l_r_arr, l_wait: TRUE)
 
 		COMMAND "Length Sort"
-			DISPLAY "\n*** Length Sort"
 			CALL custom_sort(reflect.Value.valueOf(l_arr), FUNCTION length_sort, "name")
+			DISPLAY "\n*** Length Sort"
 			FOR i = 1 TO l_arr.getLength()
-				DISPLAY l_arr[i].idx, ":", l_arr[i].name
+				DISPLAY SFMT("%1) idx: %2 name: %3", (i USING "#&"), (l_arr[i].idx USING "#&"), l_arr[i].name)
 			END FOR
 			CALL l_r_arr.init("l_arr", reflect.Value.valueOf(l_arr))
 			CALL l_dUI.show("Length Sort", l_r_arr, l_wait: TRUE)
 
 		COMMAND "Distance Sort"
-			DISPLAY "\n*** Distance Sort"
 			CALL custom_sort(reflect.Value.valueOf(l_arr), FUNCTION distance_sort, "x,y")
+			DISPLAY "\n*** Distance Sort"
 			FOR i = 1 TO l_arr.getLength()
-				DISPLAY l_arr[i].idx, ":", l_arr[i].name, " ", l_arr[i].x USING "&", ",", l_arr[i].y USING "&"
+				DISPLAY SFMT("%1) idx: %2 x: %3 y: %4", (i USING "#&"), (l_arr[i].idx USING "#&"), l_arr[i].x, l_arr[i].y)
 			END FOR
 			CALL l_r_arr.init("l_arr", reflect.Value.valueOf(l_arr))
 			CALL l_dUI.show("Distance Sort", l_r_arr, l_wait: TRUE)
