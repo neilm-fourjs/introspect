@@ -8,7 +8,7 @@ MAIN
 	DEFINE l_r     introspect.rObj.rObj                                    -- The record object
 	DEFINE l_r_arr introspect.rObj.rObj                                    -- The array object
 	DEFINE l_dUI   introspect.dynUI.dUI                                    -- The Dynamic UI object
-	DATABASE njm_demo310                                                   -- Connect to our database
+	DATABASE "njm_demo310.db+driver='dbmsqt'"                                              -- Connect to the database
 	CALL sql2array("SELECT * FROM customer", reflect.Value.valueOf(l_arr)) -- Fill array from SQL
 	WHILE l_row > 0                                                        -- Loop until the display array is cancelled.
 		CALL l_r_arr.init("l_arr", reflect.Value.valueOf(l_arr))             -- Initialize array object
