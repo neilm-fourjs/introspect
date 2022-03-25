@@ -30,7 +30,9 @@ PUBLIC TYPE rObj RECORD
 	module    STRING
 END RECORD
 
-FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value)
+-- @param l_nam the name of the record
+-- @param l_rv the reflect Value 
+FUNCTION (this rObj) init(l_nam STRING, l_rv reflect.Value) RETURNS()
 	DEFINE x, z SMALLINT
 	INITIALIZE this TO NULL
 	VAR l_rt reflect.Type = l_rv.getType()

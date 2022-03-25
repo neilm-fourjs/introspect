@@ -18,6 +18,7 @@ The Libraries:
 * prettyName - Make a variable name pretty for a form label / table column title
 * rObj - reflect object to an array and to stdout.
 * sql2array - SQL to an array.
+* simpleDump - dump a record structure to a file. Recursive to handle nested records / arrays / types ( including types from another module )
 
 NOTE: Some of these examples are of dynamic generic library code that can be helpful to quickly make simple maintenance programs for simple tables. More complex code could be used with call back functions to handle business rules and validation but generally using normal 4gl dialogs will provide less complex and therefore easier to maintain programs.
 

@@ -77,6 +77,7 @@
       <File filePath="src/introspect/dynUI.4gl"/>
       <File filePath="src/introspect/prettyName.4gl"/>
       <File filePath="src/introspect/rObj.4gl"/>
+      <File filePath="src/introspect/simpleDump.4gl"/>
       <File filePath="src/introspect/sql2array.4gl"/>
     </Library>
   </Group>
