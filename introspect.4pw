@@ -119,4 +119,11 @@
       <File filePath="src/sort.4gl"/>
     </Application>
   </Group>
+  <Group id="-642403220" label="Demo6 simpleDump" language="Genero">
+    <Application binaryName="main" dependencies="14000" id="-339580094" label="main">
+      <Configuration id="535545108" label="main_sd"/>
+      <File filePath="src/main_sd.4gl"/>
+      <File filePath="src/sdLib.4gl"/>
+    </Application>
+  </Group>
 </Project>
